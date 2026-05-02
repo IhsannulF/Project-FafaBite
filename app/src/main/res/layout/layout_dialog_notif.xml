@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="24dp"
+    android:background="@drawable/bg_dialog_rounded"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Ikon Pop-up (Bisa diganti dengan ikon centang/silang nantinya) -->
+    <ImageView
+        android:id="@+id/ivDialogIcon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="@drawable/bg_input_pill"
+        android:backgroundTint="#FFF3E0"
+        android:padding="20dp"
+        android:src="@android:drawable/ic_dialog_info"
+        app:tint="#FF9800" />
+
+    <!-- Judul Notifikasi -->
+    <TextView
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Pemberitahuan"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <!-- Pesan / Deskripsi -->
+    <TextView
+        android:id="@+id/tvDialogMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="Pesan notifikasi akan muncul di sini."
+        android:textColor="#757575"
+        android:textSize="14sp" />
+
+    <!-- Tombol Aksi -->
+    <Button
+        android:id="@+id/btnDialogOk"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="#FF9800"
+        android:text="Oke"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="16dp" />
+
+</LinearLayout>

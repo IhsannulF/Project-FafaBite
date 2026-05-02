@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Permission Internet cukup satu saja -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="FafaBite"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.FafaBite"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        <activity
+            android:name=".ui.ProfilRestoranActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.PesananRestoranActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.MenuRestoranActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.RestoranMainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.RegisterRestoranActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.PilihPeranActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.LandingActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.LokasiActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.PesananActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.RiwayatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.AkunActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+    </application>
+
+</manifest>

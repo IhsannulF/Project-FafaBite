@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp">
+
+        <!-- Tombol Back / Header -->
+        <TextView
+            android:id="@+id/tvHeaderResto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="← Daftar Mitra Restoran"
+            android:textColor="@color/text_dark"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Label Nama Restoran -->
+        <TextView
+            android:id="@+id/tvNamaRestoLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Nama Restoran / Toko"
+            android:textColor="@color/text_dark"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvHeaderResto" />
+
+        <!-- Input Nama Restoran -->
+        <EditText
+            android:id="@+id/etNamaResto"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input_pill"
+            android:hint="Misal: Toko Roti Makmur"
+            android:inputType="textPersonName"
+            android:paddingHorizontal="24dp"
+            android:textColorHint="@color/text_grey"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/tvNamaRestoLabel" />
+
+        <!-- Label Email -->
+        <TextView
+            android:id="@+id/tvEmailRestoLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Email Bisnis"
+            android:textColor="@color/text_dark"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etNamaResto" />
+
+        <!-- Input Email -->
+        <EditText
+            android:id="@+id/etEmailResto"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input_pill"
+            android:hint="admin@tokoroti.com"
+            android:inputType="textEmailAddress"
+            android:paddingHorizontal="24dp"
+            android:textColorHint="@color/text_grey"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/tvEmailRestoLabel" />
+
+        <!-- Label Alamat -->
+        <TextView
+            android:id="@+id/tvAlamatRestoLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Alamat Lengkap Toko"
+            android:textColor="@color/text_dark"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etEmailResto" />
+
+        <!-- Input Alamat -->
+        <EditText
+            android:id="@+id/etAlamatResto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="55dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input_pill"
+            android:hint="Masukkan alamat detail..."
+            android:inputType="textMultiLine"
+            android:maxLines="3"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="16dp"
+            android:textColorHint="@color/text_grey"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/tvAlamatRestoLabel" />
+
+        <!-- Label Password -->
+        <TextView
+            android:id="@+id/tvPasswordRestoLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Password"
+            android:textColor="@color/text_dark"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etAlamatResto" />
+
+        <!-- Input Password -->
+        <EditText
+            android:id="@+id/etPasswordResto"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input_pill"
+            android:drawableEnd="@android:drawable/ic_menu_view"
+            android:hint="Buat password yang kuat"
+            android:inputType="textPassword"
+            android:paddingStart="24dp"
+            android:paddingEnd="16dp"
+            android:textColorHint="@color/text_grey"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/tvPasswordRestoLabel" />
+
+        <!-- TOMBOL DAFTAR MITRA -->
+        <Button
+            android:id="@+id/btnRegisterRestoSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="32dp"
+            android:backgroundTint="#FF9800"
+            android:text="Daftar Menjadi Mitra"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="30dp"
+            app:layout_constraintTop_toBottomOf="@id/etPasswordResto" />
+
+        <!-- TEKS PINDAH KE LOGIN -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnRegisterRestoSubmit">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sudah punya akun restoran? "
+                android:textColor="@color/text_dark" />
+
+            <TextView
+                android:id="@+id/tvGoToLoginResto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign in"
+                android:textColor="#FF9800"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

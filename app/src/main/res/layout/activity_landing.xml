@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fafa_blue_primary"> <!-- Warna Biru Utama -->
+
+    <!-- ========================================== -->
+    <!-- DEKORASI BOLA MELAYANG (Mirip Referensi) -->
+    <!-- ========================================== -->
+    <!-- Bola Kiri Atas -->
+    <View
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="-50dp"
+        android:layout_marginTop="-30dp"
+        android:background="@drawable/bg_circle_glass"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Bola Kanan Tengah -->
+    <View
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginEnd="-80dp"
+        android:background="@drawable/bg_circle_glass"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4" />
+
+    <!-- Bola Kiri Bawah -->
+    <View
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginBottom="120dp"
+        android:background="@drawable/bg_circle_glass"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- ========================================== -->
+    <!-- TEKS WELCOME (Tengah Layar) -->
+    <!-- ========================================== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="32dp"
+        app:layout_constraintBottom_toTopOf="@id/layoutButtons"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Logo atau Icon (Opsional, pakai icon bintang sementara) -->
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="24dp"
+            android:src="@android:drawable/btn_star_big_on"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selamat Datang!"
+            android:textColor="@color/white"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Pilih peranmu untuk mulai menyelamatkan makanan hari ini."
+            android:textAlignment="center"
+            android:textColor="#E0E0E0"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <!-- ========================================== -->
+    <!-- WADAH TOMBOL BAWAH -->
+    <!-- ========================================== -->
+    <LinearLayout
+        android:id="@+id/layoutButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_top_rounded_white"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="40dp"
+        android:paddingBottom="48dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:text="Mulai selamatkan makanan hari ini!"
+            android:textAlignment="center"
+            android:textColor="@color/text_dark"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- Tombol Utama: Menuju Login -->
+        <Button
+            android:id="@+id/btnMulaiSekarang"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:backgroundTint="@color/fafa_blue_primary"
+            android:text="Mulai Sekarang"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:cornerRadius="30dp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

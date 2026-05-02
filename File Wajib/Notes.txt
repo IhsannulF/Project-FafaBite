@@ -1,0 +1,18 @@
+Taruh file fafabite_api di lokasi www laragon
+Contoh : C:\laragon\www
+
+saat coding WAJIB mencari IP Adress mu di terminal/cmd :
+Tulis ini : ipconfig 
+
+untuk lihat IP address Contoh IPv4 Address : 192.16X.X.X
+"Ambil Angkanya" 
+
+cari file ApiConfig.kt di 
+FafaBite\app\src\main\java\com\example\fafabite\api
+
+Ganti IP address di baris Apiconfig ini
+private const val BASE_URL = "http://192.16x.x.x/fafabite_api/"
+
+Data Dummy :
+User Pedagang : ihsanul@fafabite.com / Pw : 123456
+User Pembeli : ihsanul@student.com / Pw : password123

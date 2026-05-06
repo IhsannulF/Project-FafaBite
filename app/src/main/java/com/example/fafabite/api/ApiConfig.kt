@@ -4,9 +4,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiConfig {
-    // GANTI ANGKA INI DENGAN IP LAPTOP KAMU! (Contoh: 192.168.1.5)
-    // Jangan lupa akhiri dengan garis miring (/)
-    private const val BASE_URL = "http://192.168.1.6/fafabite_api/"
+    // Pastikan persis seperti ini: ada http:// di depan dan diakhiri garis miring /
+    private const val BASE_URL = "http://192.168.2.192:8000/api/"
 
     fun getApiService(): ApiService {
         val retrofit = Retrofit.Builder()

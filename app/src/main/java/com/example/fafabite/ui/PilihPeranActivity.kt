@@ -3,7 +3,6 @@ package com.example.fafabite.ui
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import com.example.fafabite.R
@@ -17,25 +16,21 @@ class PilihPeranActivity : AppCompatActivity() {
         val cvPembeli = findViewById<CardView>(R.id.cvPeranPembeli)
         val cvRestoran = findViewById<CardView>(R.id.cvPeranRestoran)
 
-        // Tombol Kembali
+        // Tombol Kembali ke Landing Page
         btnBack.setOnClickListener {
             finish()
         }
 
-        // Jika Klik Kartu Pembeli
+        // 1. Jika Klik Kartu Pembeli -> Arahkan ke Register Pembeli
         cvPembeli.setOnClickListener {
-            // Kita arahkan ke RegisterActivity yang sudah kamu buat sebelumnya
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
 
-        // Jika Klik Kartu Restoran
+        // 2. Jika Klik Kartu Restoran -> Arahkan ke Register Restoran
         cvRestoran.setOnClickListener {
-            // Jika Klik Kartu Restoran
-
-                // Arahkan ke halaman Register Restoran
-                val intent = Intent(this, RegisterRestoranActivity::class.java)
-                startActivity(intent)
+            val intent = Intent(this, RegisterRestoranActivity::class.java)
+            startActivity(intent)
         }
     }
 }

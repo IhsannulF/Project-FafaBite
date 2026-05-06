@@ -3,31 +3,104 @@ package com.example.fafabite.ui
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.fafabite.R
+import com.example.fafabite.api.ApiConfig
+import com.example.fafabite.models.LoginResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class RegisterRestoranActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_restoran)
 
+        val tvBack = findViewById<TextView>(R.id.tvHeaderResto)
+
+        // Mengambil semua inputan sesuai dengan ID di XML kamu
+        val etNama = findViewById<EditText>(R.id.etNamaResto)
+        val etEmail = findViewById<EditText>(R.id.etEmailResto)
+        val etAlamat = findViewById<EditText>(R.id.etAlamatResto) // <-- Ini tambahan untuk Alamat
+        val etPassword = findViewById<EditText>(R.id.etPasswordResto)
+
         val btnDaftar = findViewById<Button>(R.id.btnRegisterRestoSubmit)
         val tvPindahLogin = findViewById<TextView>(R.id.tvGoToLoginResto)
-        val tvBack = findViewById<TextView>(R.id.tvHeaderResto)
 
         // 1. Tombol Kembali (Teks Header)
         tvBack.setOnClickListener {
             finish()
         }
 
-        // 3. Teks Pindah ke Login
+        // 2. Tombol Daftar Mitra Restoran
+        btnDaftar.setOnClickListener {
+            val nama = etNama.text.toString().trim()
+            val email = etEmail.text.toString().trim()
+            val alamat = etAlamat.text.toString().trim() // Ambil teks alamat
+            val password = etPassword.text.toString().trim()
+
+            // Validasi agar tidak ada kolom yang kosong (termasuk alamat)
+            if (nama.isEmpty() || email.isEmpty() || alamat.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Semua kolom termasuk alamat harus diisi!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Ubah teks tombol jadi loading
+            btnDaftar.text = "Loading..."
+            btnDaftar.isEnabled = false
+
+            // 3. Panggil API Register via Retrofit dengan ROLE: "pedagang"
+            // CATATAN: Jika di database Laravel kamu ada kolom 'alamat',
+            // kamu perlu menambahkan parameter alamat di ApiService.kt nantinya.
+            // Sementara ini kita panggil sesuai fungsi di ApiService yang sudah ada.
+            ApiConfig.getApiService().registerUser(
+                namaLengkap = nama,   // Nama user diisi dengan nama resto
+                email = email,
+                pass = password,
+                role = "pedagang",
+                namaToko = nama,      // Nama toko juga diisi dengan nama resto
+                alamat = alamat       // Alamat toko
+            ).enqueue(object : Callback<LoginResponse> {
+                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                    // Kembalikan teks tombol
+                    btnDaftar.text = "Daftar Menjadi Mitra"
+                    btnDaftar.isEnabled = true
+
+                    if (response.isSuccessful && response.body() != null) {
+                        val responData = response.body()!!
+
+                        if (responData.sukses) {
+                            Toast.makeText(this@RegisterRestoranActivity, "Pendaftaran Mitra Berhasil! Silakan Login.", Toast.LENGTH_SHORT).show()
+
+                            // Jika sukses, arahkan ke LoginActivity dan bersihkan riwayat halaman
+                            val intent = Intent(this@RegisterRestoranActivity, LoginActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            Toast.makeText(this@RegisterRestoranActivity, responData.pesan, Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(this@RegisterRestoranActivity, "Gagal mendaftar, periksa kembali data Anda.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                    btnDaftar.text = "Daftar Menjadi Mitra"
+                    btnDaftar.isEnabled = true
+                    Toast.makeText(this@RegisterRestoranActivity, "Koneksi Gagal: ${t.message}", Toast.LENGTH_LONG).show()
+                }
+            })
+        }
+
+        // 4. Teks Pindah ke Login
         tvPindahLogin.setOnClickListener {
-            // 2. Tombol Daftar Mitra
             val intent = Intent(this, LoginActivity::class.java)
             // Membersihkan tumpukan halaman agar tidak menumpuk saat di-back
-           intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
         }

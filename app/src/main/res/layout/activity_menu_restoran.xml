@@ -22,7 +22,7 @@
                 android:id="@+id/headerMenuResto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#FF9800"
+                android:background="@color/fafa_blue_primary"
                 android:orientation="vertical"
                 android:paddingHorizontal="24dp"
                 android:paddingTop="40dp"
@@ -42,7 +42,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="Perbarui stok dan atur harga diskon"
-                    android:textColor="#FFE0B2"
+                    android:textColor="#E3F2FD"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -74,10 +74,10 @@
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:background="@drawable/bg_input_pill"
-                            android:backgroundTint="#FFF3E0"
+                            android:backgroundTint="#E3F2FD"
                             android:padding="20dp"
                             android:src="@android:drawable/ic_menu_gallery"
-                            app:tint="#FF9800" />
+                            app:tint="@color/fafa_blue_primary" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -131,7 +131,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="8dp"
                                     android:text="Rp 10.000"
-                                    android:textColor="#FF9800"
+                                    android:textColor="@color/fafa_blue_primary"
                                     android:textSize="14sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
@@ -232,8 +232,8 @@
         android:layout_gravity="bottom"
         android:background="@color/white"
         app:elevation="8dp"
-        app:itemIconTint="#FF9800"
-        app:itemTextColor="#FF9800"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
         app:menu="@menu/menu_resto_nav" />
 
     <!-- FAB TAMBAH MENU -->
@@ -244,7 +244,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="80dp"
-        android:backgroundTint="#FF9800"
+        android:backgroundTint="@color/fafa_blue_primary"
         android:contentDescription="Tambah Makanan"
         android:src="@android:drawable/ic_input_add"
         app:tint="@color/white" />

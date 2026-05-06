@@ -19,7 +19,9 @@ class MenuRestoranActivity : AppCompatActivity() {
         // Set ikon "Menu" menyala
         bottomNav.selectedItemId = R.id.nav_makanan_resto
 
+
         // Logika Navbar Restoran
+
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home_resto -> {

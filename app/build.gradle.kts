@@ -37,7 +37,6 @@ android {
 
 dependencies {
 
-        // ... (dependency bawaan biarkan saja) ...
 
         // Retrofit & Gson untuk networking (mengambil data dari API)
         implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -60,4 +59,11 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Retrofit & Gson (Untuk mengirim data ke Laravel)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Coroutines (Agar aplikasi tidak freeze/lag saat ngirim foto)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
 }

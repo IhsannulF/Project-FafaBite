@@ -25,7 +25,7 @@ class LoginActivity : AppCompatActivity() {
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val tvSignUp = findViewById<TextView>(R.id.tvSignUp)
 
-        // Beri perintah pindah halaman saat "Sign up" diklik
+        // Balik ke Pilih Peran jika ingin daftar akun baru
         tvSignUp.setOnClickListener {
             val intent = Intent(this@LoginActivity, PilihPeranActivity::class.java)
             startActivity(intent)
@@ -40,10 +40,11 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Indikator loading agar user tidak klik berkali-kali
             btnLogin.text = "Loading..."
             btnLogin.isEnabled = false
 
-            // Memanggil API via Retrofit
+            // Memanggil API via Retrofit (Pastikan IP Laptop di ApiConfig sudah benar!)
             ApiConfig.getApiService().loginUser(email, password).enqueue(object : Callback<LoginResponse> {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     btnLogin.text = "Sign In"
@@ -53,52 +54,50 @@ class LoginActivity : AppCompatActivity() {
                         val loginResponse = response.body()!!
 
                         if (loginResponse.sukses) {
-                            Toast.makeText(this@LoginActivity, loginResponse.pesan, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@LoginActivity, "Selamat Datang!", Toast.LENGTH_SHORT).show()
 
-                            // =========================================================
-                            // AMBIL ROLE DARI API DAN LEMPAR KE FUNGSI PORTAL
-                            // =========================================================
-                            // CATATAN: Ganti 'loginResponse.role' di bawah ini sesuai dengan
-                            // struktur data class LoginResponse kamu.
-                            // Bisa jadi 'loginResponse.data.role' atau 'loginResponse.user.role'
+                            // Mengambil peran dari object data di Response API
+                            // Pastikan di Model LoginResponse.kt kamu ada field 'role'
                             val roleUser = loginResponse.data?.role
 
-                            // Panggil fungsi pembagi jalur
+                            // Panggil portal pemisah jalur
                             masukSesuaiPeran(roleUser ?: "")
 
                         } else {
                             Toast.makeText(this@LoginActivity, loginResponse.pesan, Toast.LENGTH_SHORT).show()
                         }
+                    } else {
+                        Toast.makeText(this@LoginActivity, "Error dari Server: ${response.code()}", Toast.LENGTH_LONG).show()
                     }
                 }
 
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                     btnLogin.text = "Sign In"
                     btnLogin.isEnabled = true
+                    // Jika ini muncul, cek: 1. IP Laptop, 2. XAMPP/Laragon menyala, 3. 'php artisan serve --host=0.0.0.0'
                     Toast.makeText(this@LoginActivity, "Koneksi Gagal: ${t.message}", Toast.LENGTH_LONG).show()
                 }
             })
         }
     }
 
-    // ==========================================
-    // FUNGSI PORTAL MASUK (PEMBAGI JALUR)
-    // ==========================================
+    /**
+     * FUNGSI PORTAL: Menentukan halaman Dashboard mana yang akan dibuka
+     */
     private fun masukSesuaiPeran(role: String) {
         val intent: Intent
 
-        // Cek isi string role dari database/API (pastikan huruf kecil/besarnya sama dengan di database)
+        // Sesuaikan string 'konsumen' dan 'pedagang' dengan isi kolom 'role' di tabel users milikmu
         if (role.equals("konsumen", ignoreCase = true)) {
             intent = Intent(this, MainActivity::class.java)
         } else if (role.equals("pedagang", ignoreCase = true)) {
             intent = Intent(this, RestoranMainActivity::class.java)
         } else {
-            // Jika role tidak dikenali atau kosong
-            Toast.makeText(this, "Role user tidak valid ($role)", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Akses ditolak: Peran tidak dikenali ($role)", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Bersihkan tumpukan halaman agar saat di-back tidak kembali ke halaman Login
+        // Hapus history halaman Login agar user tidak bisa 'back' ke sini lagi setelah masuk
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()

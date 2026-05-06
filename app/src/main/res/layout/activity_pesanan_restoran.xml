@@ -21,7 +21,7 @@
                 android:id="@+id/headerPesananResto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#FF9800"
+                android:background="@color/fafa_blue_primary"
                 android:orientation="vertical"
                 android:paddingHorizontal="24dp"
                 android:paddingTop="40dp"
@@ -41,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="Kelola pesanan dari pembeli dengan cepat"
-                    android:textColor="#FFE0B2"
+                    android:textColor="#E3F2FD"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -66,7 +66,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_input_pill"
-                        android:backgroundTint="#FF9800"
+                        android:backgroundTint="@color/fafa_blue_primary"
                         android:paddingHorizontal="20dp"
                         android:paddingVertical="8dp"
                         android:text="Semua Aktif"
@@ -137,11 +137,11 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:background="#FFF3E0"
+                                android:background="#E3F2FD"
                                 android:paddingHorizontal="8dp"
                                 android:paddingVertical="4dp"
                                 android:text="Pesanan Baru"
-                                android:textColor="#FF9800"
+                                android:textColor="@color/fafa_blue_primary"
                                 android:textSize="12sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
@@ -191,7 +191,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="12dp"
                                 android:layout_weight="1"
-                                android:backgroundTint="#FF9800"
+                                android:backgroundTint="@color/fafa_blue_primary"
                                 android:text="Terima"
                                 android:textColor="@color/white"
                                 app:cornerRadius="8dp" />
@@ -278,8 +278,8 @@
         android:layout_gravity="bottom"
         android:background="@color/white"
         app:elevation="8dp"
-        app:itemIconTint="#FF9800"
-        app:itemTextColor="#FF9800"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
         app:menu="@menu/menu_resto_nav" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

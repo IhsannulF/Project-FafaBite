@@ -1,5 +1,6 @@
 package com.example.fafabite.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -44,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
             btnLogin.text = "Loading..."
             btnLogin.isEnabled = false
 
-            // Memanggil API via Retrofit (Pastikan IP Laptop di ApiConfig sudah benar!)
+            // Memanggil API via Retrofit
             ApiConfig.getApiService().loginUser(email, password).enqueue(object : Callback<LoginResponse> {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     btnLogin.text = "Sign In"
@@ -54,14 +55,26 @@ class LoginActivity : AppCompatActivity() {
                         val loginResponse = response.body()!!
 
                         if (loginResponse.sukses) {
-                            Toast.makeText(this@LoginActivity, "Selamat Datang!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@LoginActivity, "Login berhasil!", Toast.LENGTH_SHORT).show()
 
-                            // Mengambil peran dari object data di Response API
-                            // Pastikan di Model LoginResponse.kt kamu ada field 'role'
-                            val roleUser = loginResponse.data?.role
+                            // --- 1. SIMPAN DATA KE SHAREDPREFERENCES ---
+                            // Kita bungkus pakai 'let' agar aman jika datanya null
+                            loginResponse.data?.let { userData ->
+                                val sharedPref = getSharedPreferences("FafaBitePrefs", Context.MODE_PRIVATE)
+                                val editor = sharedPref.edit()
 
-                            // Panggil portal pemisah jalur
-                            masukSesuaiPeran(roleUser ?: "")
+                                // Pastikan penamaan id_user, nama_lengkap, dll sesuai dengan Model LoginResponse.kt kamu
+                                editor.putInt("ID_USER", userData.id_user)
+                                editor.putString("NAMA_USER", userData.nama_lengkap)
+                                editor.putString("EMAIL_USER", userData.email)
+                                editor.putString("ROLE_USER", userData.role)
+                                editor.apply() // Kunci dompet
+                            }
+                            // -------------------------------------------
+
+                            // 2. Panggil portal pemisah jalur berdasarkan role
+                            val roleUser = loginResponse.data?.role ?: ""
+                            masukSesuaiPeran(roleUser)
 
                         } else {
                             Toast.makeText(this@LoginActivity, loginResponse.pesan, Toast.LENGTH_SHORT).show()
@@ -74,7 +87,6 @@ class LoginActivity : AppCompatActivity() {
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                     btnLogin.text = "Sign In"
                     btnLogin.isEnabled = true
-                    // Jika ini muncul, cek: 1. IP Laptop, 2. XAMPP/Laragon menyala, 3. 'php artisan serve --host=0.0.0.0'
                     Toast.makeText(this@LoginActivity, "Koneksi Gagal: ${t.message}", Toast.LENGTH_LONG).show()
                 }
             })
@@ -87,17 +99,18 @@ class LoginActivity : AppCompatActivity() {
     private fun masukSesuaiPeran(role: String) {
         val intent: Intent
 
-        // Sesuaikan string 'konsumen' dan 'pedagang' dengan isi kolom 'role' di tabel users milikmu
-        if (role.equals("konsumen", ignoreCase = true)) {
+        // Mengecek apakah user ini pembeli/konsumen atau pedagang
+        if (role.equals("konsumen", ignoreCase = true) || role.equals("pembeli", ignoreCase = true)) {
             intent = Intent(this, MainActivity::class.java)
         } else if (role.equals("pedagang", ignoreCase = true)) {
+            // Arahkan ke RestoranMainActivity
             intent = Intent(this, RestoranMainActivity::class.java)
         } else {
             Toast.makeText(this, "Akses ditolak: Peran tidak dikenali ($role)", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Hapus history halaman Login agar user tidak bisa 'back' ke sini lagi setelah masuk
+        // Hapus history halaman Login agar user tidak bisa 'back' ke sini lagi
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()

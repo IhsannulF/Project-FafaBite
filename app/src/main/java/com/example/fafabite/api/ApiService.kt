@@ -6,14 +6,18 @@ import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 
 interface ApiService {
 
     // --- Fitur Login ---
     @FormUrlEncoded
+    @Headers("Accept: application/json")
     @POST("login")
     fun loginUser(
         @Field("email") email: String,
@@ -22,6 +26,7 @@ interface ApiService {
 
     // --- Fitur Register ---
     @FormUrlEncoded
+    @Headers("Accept: application/json")
     @POST("register")
     fun registerUser(
         @Field("nama_lengkap") namaLengkap: String,
@@ -33,6 +38,7 @@ interface ApiService {
     ): Call<LoginResponse>
 
     // --- Fitur Tambah Produk (Yang baru kita buat) ---
+    @Headers("Accept: application/json")
     @Multipart
     @POST("tambah-produk") // Nama rute pintu gerbang di Laravel
     fun uploadProduk(
@@ -45,4 +51,18 @@ interface ApiService {
         @Part("status") status: RequestBody,
         @Part foto_makanan: MultipartBody.Part // Khusus untuk file foto
     ): Call<ResponseProduk>
+
+    // --- Fitur Dashboard Penjual ---
+    @Headers("Accept: application/json")
+    @GET("dashboard-penjual/{id_toko}")
+    fun getDashboardPenjual(
+        @Path("id_toko") idToko: String
+    ): Call<ResponseDashboard>
+
+    // --- Fitur Ambil Daftar Menu Restoran ---
+    @Headers("Accept: application/json")
+    @GET("produk/toko/{id_toko}")
+    fun getProdukByToko(
+        @Path("id_toko") idToko: String
+    ): Call<ResponseListProduk>
 }

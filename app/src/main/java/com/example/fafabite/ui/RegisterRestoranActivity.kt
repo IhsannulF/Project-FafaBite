@@ -75,16 +75,21 @@ class RegisterRestoranActivity : AppCompatActivity() {
                         if (responData.sukses) {
                             Toast.makeText(this@RegisterRestoranActivity, "Pendaftaran Mitra Berhasil! Silakan Login.", Toast.LENGTH_SHORT).show()
 
-                            // Jika sukses, arahkan ke LoginActivity dan bersihkan riwayat halaman
                             val intent = Intent(this@RegisterRestoranActivity, LoginActivity::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(intent)
                             finish()
                         } else {
-                            Toast.makeText(this@RegisterRestoranActivity, responData.pesan, Toast.LENGTH_SHORT).show()
+                            // Jika masuk ke sini, berarti Laravel yang sengaja mengirim tulisan "Email sudah digunakan"
+                            Toast.makeText(this@RegisterRestoranActivity, "Ditolak Server: ${responData.pesan}", Toast.LENGTH_LONG).show()
                         }
                     } else {
-                        Toast.makeText(this@RegisterRestoranActivity, "Gagal mendaftar, periksa kembali data Anda.", Toast.LENGTH_SHORT).show()
+                        // INI YANG PALING PENTING! Jika gagal karena sistem (misal tabel toko belum dibuat), pesan error aslinya akan muncul di sini.
+                        val errorBody = response.errorBody()?.string()
+                        Toast.makeText(this@RegisterRestoranActivity, "Error ${response.code()}: $errorBody", Toast.LENGTH_LONG).show()
+
+                        // Print ke terminal Logcat agar bisa kita baca selengkapnya
+                        android.util.Log.e("API_ERROR", "Code: ${response.code()}, Body: $errorBody")
                     }
                 }
 

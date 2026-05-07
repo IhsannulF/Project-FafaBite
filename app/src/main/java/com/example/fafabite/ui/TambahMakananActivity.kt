@@ -1,5 +1,7 @@
 package com.example.fafabite.ui
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
@@ -19,6 +21,7 @@ import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import java.util.*
 
 class TambahMakananActivity : AppCompatActivity() {
 
@@ -48,12 +51,34 @@ class TambahMakananActivity : AppCompatActivity() {
         val etHargaDiskon = findViewById<EditText>(R.id.etHargaDiskon)
         val etStok = findViewById<EditText>(R.id.etStokMakanan)
         val etPickup = findViewById<EditText>(R.id.etWaktuPickup)
-        val switchStatus = findViewById<Switch>(R.id.switchStatus)
         val btnSimpan = findViewById<Button>(R.id.btnSimpanMakanan)
 
         btnBack.setOnClickListener { finish() }
         btnUploadLayout.setOnClickListener { pickImageLauncher.launch("image/*") }
         ivPreview.setOnClickListener { pickImageLauncher.launch("image/*") }
+
+        // MUNCULKAN KALENDER DAN JAM OTOMATIS
+        etPickup.isFocusable = false
+        etPickup.isClickable = true
+        etPickup.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+            DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
+                val hour = calendar.get(Calendar.HOUR_OF_DAY)
+                val minute = calendar.get(Calendar.MINUTE)
+
+                TimePickerDialog(this, { _, selectedHour, selectedMinute ->
+                    val formattedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d %02d:%02d:00",
+                        selectedYear, selectedMonth + 1, selectedDay, selectedHour, selectedMinute)
+
+                    etPickup.setText(formattedDate)
+                }, hour, minute, true).show()
+
+            }, year, month, day).show()
+        }
 
         // AKSI SAAT TOMBOL SIMPAN DIKLIK
         btnSimpan.setOnClickListener {
@@ -62,7 +87,6 @@ class TambahMakananActivity : AppCompatActivity() {
             val hargaDiskon = etHargaDiskon.text.toString().trim()
             val stok = etStok.text.toString().trim()
             val pickup = etPickup.text.toString().trim()
-            val isTersedia = switchStatus.isChecked
 
             // 1. Validasi Input
             if (imageUri == null) {
@@ -74,13 +98,11 @@ class TambahMakananActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Ubah teks tombol jadi loading
             btnSimpan.text = "Mengunggah..."
             btnSimpan.isEnabled = false
 
-            // 2. Bungkus Data Teks menjadi RequestBody (Format yang didukung OkHttp 3)
+            // 2. Bungkus Data Teks menjadi RequestBody
             val textMediaType = MediaType.parse("text/plain")
-            // Nanti "1" ini kita ambil dari data user yang sedang login
             val idTokoBody = RequestBody.create(textMediaType, "1")
             val namaBody = RequestBody.create(textMediaType, nama)
             val hargaAsliBody = RequestBody.create(textMediaType, hargaAsli)
@@ -88,36 +110,44 @@ class TambahMakananActivity : AppCompatActivity() {
             val stokBody = RequestBody.create(textMediaType, stok)
             val pickupBody = RequestBody.create(textMediaType, pickup)
 
-            val statusTeks = if (isTersedia) "tersedia" else "habis"
-            val statusBody = RequestBody.create(textMediaType, statusTeks)
+            // Mengatur default status langsung ke "tersedia" karena ini produk baru
+            val statusBody = RequestBody.create(textMediaType, "tersedia")
 
             // 3. Bungkus Foto (Uri) menjadi File Multipart
             val fileFoto = uriToFile(imageUri!!, this)
             val requestImageFile = RequestBody.create(MediaType.parse("image/jpeg"), fileFoto)
             val imageMultipart = MultipartBody.Part.createFormData("foto_makanan", fileFoto.name, requestImageFile)
 
-            // 4. PANGGIL KURIR RETROFIT UNTUK BERANGKAT!
+            // 4. PANGGIL KURIR RETROFIT
             ApiConfig.getApiService().uploadProduk(
                 idTokoBody, namaBody, hargaAsliBody, hargaDiskonBody, stokBody, pickupBody, statusBody, imageMultipart
             ).enqueue(object : Callback<ResponseProduk> {
+
                 override fun onResponse(call: Call<ResponseProduk>, response: Response<ResponseProduk>) {
-                    // Kembalikan tombol seperti semula
-                    btnSimpan.text = "Simpan"
+                    btnSimpan.text = "Simpan Produk"
                     btnSimpan.isEnabled = true
 
                     if (response.isSuccessful && response.body() != null) {
-                        // Jika Laravel membalas "Sukses"
-                        NotifHelper.showDialog(this@TambahMakananActivity, "Berhasil!", response.body()!!.pesan) {
-                            finish() // Tutup halaman kalau sukses
+                        val dataServer = response.body()!!
+
+                        // Cek apakah PHP benar-benar bilang sukses = true
+                        if (dataServer.sukses) {
+                            NotifHelper.showDialog(this@TambahMakananActivity, "Berhasil!", dataServer.pesan) {
+                                finish()
+                            }
+                        } else {
+                            // Jika PHP membalas 200 OK tapi datanya ditolak (misal validasi gagal)
+                            NotifHelper.showDialog(this@TambahMakananActivity, "Ditolak PHP", dataServer.pesan)
                         }
                     } else {
-                        NotifHelper.showDialog(this@TambahMakananActivity, "Gagal", "Maaf, terjadi kesalahan saat menyimpan data.")
+                        // INI YANG PALING PENTING! Tangkap error asli dari server (Misal 500 atau 413)
+                        val pesanErrorAsli = response.errorBody()?.string() ?: "Error tidak terbaca"
+                        NotifHelper.showDialog(this@TambahMakananActivity, "Error Server (${response.code()})", pesanErrorAsli)
                     }
                 }
 
                 override fun onFailure(call: Call<ResponseProduk>, t: Throwable) {
-                    // Jika gagal nyambung ke server (IP salah / server mati)
-                    btnSimpan.text = "Simpan"
+                    btnSimpan.text = "Simpan Produk"
                     btnSimpan.isEnabled = true
                     NotifHelper.showDialog(this@TambahMakananActivity, "Error Koneksi", "Server tidak merespon: ${t.message}")
                 }
@@ -125,7 +155,7 @@ class TambahMakananActivity : AppCompatActivity() {
         }
     }
 
-    // --- FUNGSI BANTUAN: Mengubah Uri Foto dari Galeri menjadi File Fisik ---
+    // --- FUNGSI BANTUAN: Mengubah Uri Foto ---
     private fun uriToFile(selectedImg: Uri, context: Context): File {
         val contentResolver = context.contentResolver
         val myFile = File.createTempFile("temp_img", ".jpg", context.cacheDir)

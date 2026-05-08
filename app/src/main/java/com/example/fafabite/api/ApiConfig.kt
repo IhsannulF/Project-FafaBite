@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiConfig {
     // Pastikan persis seperti ini: ada http:// di depan dan diakhiri garis miring /
-    private const val BASE_URL = "http://10.27.59.232:8000/api/"
+    private const val BASE_URL = "http://192.168.1.82:8000/api/"
 
     fun getApiService(): ApiService {
         val retrofit = Retrofit.Builder()

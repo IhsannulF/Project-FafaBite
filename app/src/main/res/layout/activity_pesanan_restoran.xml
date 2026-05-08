@@ -2,275 +2,108 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F6FA">
 
-    <ScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:paddingBottom="60dp"> <LinearLayout
+        android:id="@+id/headerPesananResto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/fafa_blue_primary"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="40dp"
+        android:paddingBottom="24dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pesanan Masuk"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Kelola pesanan dari pembeli dengan cepat"
+            android:textColor="#E3F2FD"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/scrollTabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="100dp">
+            android:layout_marginTop="16dp"
+            android:clipToPadding="false"
+            android:paddingHorizontal="24dp"
+            android:scrollbars="none"
+            app:layout_constraintTop_toBottomOf="@id/headerPesananResto">
 
-            <!-- HEADER -->
             <LinearLayout
-                android:id="@+id/headerPesananResto"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/fafa_blue_primary"
-                android:orientation="vertical"
-                android:paddingHorizontal="24dp"
-                android:paddingTop="40dp"
-                android:paddingBottom="24dp"
-                app:layout_constraintTop_toTopOf="parent">
+                android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/tabSemua"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pesanan Masuk"
+                    android:background="@drawable/bg_input_pill"
+                    android:backgroundTint="@color/fafa_blue_primary"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="8dp"
+                    android:text="Semua Aktif"
                     android:textColor="@color/white"
-                    android:textSize="22sp"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tabMenunggu"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Kelola pesanan dari pembeli dengan cepat"
-                    android:textColor="#E3F2FD"
-                    android:textSize="14sp" />
-            </LinearLayout>
+                    android:layout_marginStart="12dp"
+                    android:background="@drawable/bg_input_pill"
+                    android:backgroundTint="#E0E0E0"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="8dp"
+                    android:text="Menunggu"
+                    android:textColor="#757575" />
 
-            <!-- TAB FILTER (Mockup) -->
-            <HorizontalScrollView
-                android:id="@+id/scrollTabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:clipToPadding="false"
-                android:paddingHorizontal="24dp"
-                android:scrollbars="none"
-                app:layout_constraintTop_toBottomOf="@id/headerPesananResto">
-
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tabDiproses"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <!-- Tab Aktif -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_input_pill"
-                        android:backgroundTint="@color/fafa_blue_primary"
-                        android:paddingHorizontal="20dp"
-                        android:paddingVertical="8dp"
-                        android:text="Semua Aktif"
-                        android:textColor="@color/white"
-                        android:textStyle="bold" />
-
-                    <!-- Tab Pasif -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:background="@drawable/bg_input_pill"
-                        android:backgroundTint="#E0E0E0"
-                        android:paddingHorizontal="20dp"
-                        android:paddingVertical="8dp"
-                        android:text="Menunggu"
-                        android:textColor="@color/text_grey" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:background="@drawable/bg_input_pill"
-                        android:backgroundTint="#E0E0E0"
-                        android:paddingHorizontal="20dp"
-                        android:paddingVertical="8dp"
-                        android:text="Diproses"
-                        android:textColor="@color/text_grey" />
-                </LinearLayout>
-            </HorizontalScrollView>
-
-            <!-- DAFTAR PESANAN -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingHorizontal="24dp"
-                android:paddingTop="24dp"
-                app:layout_constraintTop_toBottomOf="@id/scrollTabs">
-
-                <!-- PESANAN 1: PESANAN BARU (Menunggu Konfirmasi) -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Order #FAFA-8892"
-                                android:textColor="@color/text_dark"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="#E3F2FD"
-                                android:paddingHorizontal="8dp"
-                                android:paddingVertical="4dp"
-                                android:text="Pesanan Baru"
-                                android:textColor="@color/fafa_blue_primary"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="#EEEEEE" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Pemesan: Muhammad Ihsanul"
-                            android:textColor="@color/text_dark"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="3x Roti Sisa Kemarin (Rp 30.000)"
-                            android:textColor="@color/text_grey" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Waktu Pickup: 19:00 - 20:00"
-                            android:textColor="@color/text_grey"
-                            android:textSize="12sp" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:orientation="horizontal">
-
-                            <Button
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:backgroundTint="#F5F5F5"
-                                android:text="Tolak"
-                                android:textColor="@color/text_dark"
-                                app:cornerRadius="8dp" />
-
-                            <Button
-                                android:id="@+id/btnTerimaPesanan"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="12dp"
-                                android:layout_weight="1"
-                                android:backgroundTint="@color/fafa_blue_primary"
-                                android:text="Terima"
-                                android:textColor="@color/white"
-                                app:cornerRadius="8dp" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <!-- PESANAN 2: SIAP DIAMBIL (Butuh Scan QR) -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Order #FAFA-1104"
-                                android:textColor="@color/text_dark"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="#E8F5E9"
-                                android:paddingHorizontal="8dp"
-                                android:paddingVertical="4dp"
-                                android:text="Siap Diambil"
-                                android:textColor="#4CAF50"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="#EEEEEE" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Pemesan: Almaaa"
-                            android:textColor="@color/text_dark"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="1x Nasi Bento Box (Rp 15.000)"
-                            android:textColor="@color/text_grey" />
-
-                        <Button
-                            android:id="@+id/btnScanQR"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:backgroundTint="#4CAF50"
-                            android:drawableLeft="@android:drawable/ic_menu_camera"
-                            android:text="Scan QR Code Pembeli"
-                            android:textColor="@color/white"
-                            app:cornerRadius="8dp" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                    android:layout_marginStart="12dp"
+                    android:background="@drawable/bg_input_pill"
+                    android:backgroundTint="#E0E0E0"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="8dp"
+                    android:text="Diproses"
+                    android:textColor="#757575" />
             </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+        </HorizontalScrollView>
 
-    <!-- NAVBAR BAWAH KHUSUS RESTORAN -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPesanan"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:clipToPadding="false"
+            android:paddingBottom="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/scrollTabs"
+            tools:listitem="@layout/item_pesanan" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavResto"
         android:layout_width="match_parent"

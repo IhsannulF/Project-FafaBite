@@ -62,8 +62,8 @@ class MakananAdapter(private val listMakanan: List<ProdukItem>) : RecyclerView.A
 
         // 5. Foto Makanan
         if (!makanan.fotoMakanan.isNullOrEmpty()) {
-            // Kita arahkan ke pintu belakang: /file-makanan/
-            val baseUrl = "http://10.27.59.232:8000/file-makanan/"
+            // Menggunakan IP Adress laptop
+            val baseUrl = "http://192.168.1.82:8000/file-makanan/"
             val urlFoto = baseUrl + makanan.fotoMakanan
 
             Glide.with(holder.itemView.context)

@@ -65,4 +65,26 @@ interface ApiService {
     fun getProdukByToko(
         @Path("id_toko") idToko: String
     ): Call<ResponseListProduk>
+
+    // Mengambil daftar pesanan toko
+    @GET("pesanan/toko/{id_toko}")
+    fun getPesananToko(
+        @Path("id_toko") idToko: Int
+    ): Call<ResponsePesanan>
+
+    // Mengupdate status pesanan (Terima/Tolak/Selesai)
+    @FormUrlEncoded
+    @POST("pesanan/update-status/{id}")
+    fun updateStatusPesanan(
+        @Path("id") idPesanan: Int,
+        @Field("status_pesanan") statusPesanan: String
+    ): Call<ResponseUpdateStatus>
+
+    // Tambahkan ini di dalam interface ApiService
+    @GET("toko/profil/{id_toko}")
+    fun getProfilToko(
+        @Path("id_toko") idToko: Int
+    ): Call<ResponseProfilToko>
+
+
 }

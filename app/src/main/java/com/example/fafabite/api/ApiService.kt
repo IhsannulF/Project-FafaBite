@@ -29,12 +29,12 @@ interface ApiService {
     @Headers("Accept: application/json")
     @POST("register")
     fun registerUser(
-        @Field("nama_lengkap") namaLengkap: String,
+        @Field("nama") nama: String?,             // Untuk pembeli
         @Field("email") email: String,
         @Field("password") pass: String,
-        @Field("role") role: String,
-        @Field("nama_toko") namaToko: String,
-        @Field("alamat") alamat: String
+        @Field("role") role: String,              // "pembeli" atau "penjual"
+        @Field("nama_toko") namaToko: String?,    // Untuk penjual
+        @Field("alamat") alamat: String?          // Untuk penjual
     ): Call<LoginResponse>
 
     // --- Fitur Tambah Produk (Yang baru kita buat) ---
@@ -86,5 +86,7 @@ interface ApiService {
         @Path("id_toko") idToko: Int
     ): Call<ResponseProfilToko>
 
-
+    // --- Ambil Data Makanan untuk Beranda Pembeli ---
+    @GET("beranda/makanan") // Pastikan URL ini sesuai dengan route di Laravel-mu
+    fun getBerandaMakanan(): Call<ResponseBerandaMakanan>
 }

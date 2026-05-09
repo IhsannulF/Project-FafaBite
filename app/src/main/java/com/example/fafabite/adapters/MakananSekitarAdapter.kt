@@ -16,7 +16,7 @@ import com.example.fafabite.api.MakananBeranda
 import java.text.NumberFormat
 import java.util.*
 
-class MakananAdapter(private val listMakanan: List<MakananBeranda>) : RecyclerView.Adapter<MakananAdapter.ViewHolder>() {
+class MakananSekitarAdapter(private val listMakanan: List<MakananBeranda>) : RecyclerView.Adapter<MakananSekitarAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvNama: TextView = view.findViewById(R.id.tvNamaMakanan)
@@ -28,7 +28,8 @@ class MakananAdapter(private val listMakanan: List<MakananBeranda>) : RecyclerVi
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_makanan, parent, false)
+        // INI YANG BEDA: Memanggil layout vertikal
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_makanan_sekitar, parent, false)
         return ViewHolder(view)
     }
 
@@ -36,20 +37,14 @@ class MakananAdapter(private val listMakanan: List<MakananBeranda>) : RecyclerVi
         val makanan = listMakanan[position]
         val formatRupiah = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
 
-        // 1. Set Nama Makanan
         holder.tvNama.text = makanan.namaMakanan
-
-        // 2. Set Harga (Dengan efek coret pada harga asli)
         holder.tvHargaAsli.text = formatRupiah.format(makanan.hargaAsli).replace("Rp", "Rp ")
         holder.tvHargaAsli.paintFlags = holder.tvHargaAsli.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-
         holder.tvHargaDiskon.text = formatRupiah.format(makanan.hargaDiskon).replace("Rp", "Rp ")
 
-        // 3. Set Info (Menggabungkan Nama Toko, Stok, dan Pickup)
         val jamPickup = makanan.waktuPickup?.substringAfter(" ")?.substringBeforeLast(":") ?: "00:00"
         holder.tvInfo.text = "${makanan.namaToko} • Stok: ${makanan.stok} • Pickup: $jamPickup"
 
-        // 4. Logika Badge Status
         if (makanan.stok > 0 && makanan.status.equals("tersedia", ignoreCase = true)) {
             holder.tvStatus.text = "Tersedia"
             holder.tvStatus.setTextColor(Color.parseColor("#4CAF50"))
@@ -60,15 +55,11 @@ class MakananAdapter(private val listMakanan: List<MakananBeranda>) : RecyclerVi
             holder.tvStatus.setBackgroundColor(Color.parseColor("#FFEBEE"))
         }
 
-        // 5. Foto Makanan dengan Glide
         if (!makanan.fotoMakanan.isNullOrEmpty()) {
             val baseUrl = "http://192.168.1.61:8000/file-makanan/"
-            val urlFoto = baseUrl + makanan.fotoMakanan
-
             Glide.with(holder.itemView.context)
-                .load(urlFoto)
+                .load(baseUrl + makanan.fotoMakanan)
                 .skipMemoryCache(true)
-                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
                 .placeholder(R.drawable.bg_input_pill)
                 .error(android.R.drawable.ic_menu_report_image)
                 .centerCrop()
@@ -85,8 +76,7 @@ class MakananAdapter(private val listMakanan: List<MakananBeranda>) : RecyclerVi
             intent.putExtra("NAMA_TOKO", makanan.namaToko)
             intent.putExtra("STOK_MAKANAN", makanan.stok)
             holder.itemView.context.startActivity(intent)
-        }
-    }
+        }    }
 
     override fun getItemCount(): Int = listMakanan.size
 }

@@ -1,5 +1,6 @@
 package com.example.fafabite.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -20,7 +21,7 @@ class ProfilRestoranActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profil_restoran)
 
-        // 1. Inisialisasi Views (Disesuaikan dengan ID di XML milikmu)
+        // 1. Inisialisasi Views
         val btnTarikDana = findViewById<Button>(R.id.btnTarikDana)
         val menuInfoToko = findViewById<TextView>(R.id.menuInformasiToko)
         val menuJamOps = findViewById<TextView>(R.id.menuJamOperasional)
@@ -31,7 +32,23 @@ class ProfilRestoranActivity : AppCompatActivity() {
         // 2. Set Ikon Profil di Navbar menyala
         bottomNav.selectedItemId = R.id.nav_profil_resto
 
-        // 3. Logika Pindah Halaman Navbar
+        // 3. Ambil data dari SharedPreferences (ID_USER yang disimpan saat Login)
+        val sharedPref = getSharedPreferences("FafaBitePrefs", Context.MODE_PRIVATE)
+        val idUserLogin = sharedPref.getInt("ID_USER", 0)
+
+        // =========================================================
+        // DINAMISASI: Panggil API sesuai dengan ID User yang login
+        // =========================================================
+        if (idUserLogin != 0) {
+            getDataProfil(idUserLogin)
+        } else {
+            // Jika ID tidak ditemukan, kembalikan ke Login
+            Toast.makeText(this, "Sesi berakhir, silakan login kembali", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
+
+        // 4. Logika Pindah Halaman Navbar
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home_resto -> {
@@ -49,41 +66,26 @@ class ProfilRestoranActivity : AppCompatActivity() {
                     overridePendingTransition(0, 0)
                     true
                 }
-                R.id.nav_profil_resto -> true // Tetap di halaman ini
+                R.id.nav_profil_resto -> true
                 else -> false
             }
         }
 
-        // =========================================================
-        // PANGGIL API UNTUK MENGAMBIL NAMA & ALAMAT DARI DATABASE
-        // =========================================================
-        getDataProfil(1) // (Nanti angka 1 ini kita ganti dengan ID Toko yang sedang login)
-
-        // 4. Logika Tombol Aksi di Halaman
+        // 5. Logika Tombol Aksi
         btnTarikDana.setOnClickListener {
             Toast.makeText(this, "Fitur Penarikan Dana segera hadir!", Toast.LENGTH_SHORT).show()
         }
 
-        menuInfoToko.setOnClickListener {
-            Toast.makeText(this, "Membuka halaman Informasi Toko...", Toast.LENGTH_SHORT).show()
-        }
-
-        menuJamOps.setOnClickListener {
-            Toast.makeText(this, "Membuka pengaturan Jam Operasional...", Toast.LENGTH_SHORT).show()
-        }
-
-        menuBantuan.setOnClickListener {
-            Toast.makeText(this, "Menghubungi Pusat Bantuan...", Toast.LENGTH_SHORT).show()
-        }
-
-        // 5. Logika Keluar Akun (Logout)
+        // 6. Logika Keluar Akun (Logout) - Sekarang menghapus session
         btnLogout.setOnClickListener {
+            // Bersihkan data login dari memori HP
+            val editor = sharedPref.edit()
+            editor.clear()
+            editor.apply()
+
             Toast.makeText(this, "Berhasil Keluar Akun", Toast.LENGTH_SHORT).show()
 
-            // Arahkan kembali ke halaman Login
             val intent = Intent(this, LoginActivity::class.java)
-
-            // Bersihkan riwayat halaman agar tombol back HP tidak bisa balik ke profil
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
@@ -100,12 +102,9 @@ class ProfilRestoranActivity : AppCompatActivity() {
                     val dataToko = response.body()?.data
 
                     if (dataToko != null) {
-                        // Cari TextView untuk nama toko dan alamat
-                        // (Kita pakai ID tvEmailToko yang ada di XML-mu untuk menampilkan Alamat)
                         val tvNamaToko = findViewById<TextView>(R.id.tvNamaToko)
                         val tvAlamatToko = findViewById<TextView>(R.id.tvEmailToko)
 
-                        // Pasangkan data dari database ke UI
                         tvNamaToko.text = dataToko.namaToko
                         tvAlamatToko.text = dataToko.alamat
                     }

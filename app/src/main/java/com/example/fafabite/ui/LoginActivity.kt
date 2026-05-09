@@ -19,6 +19,23 @@ import retrofit2.Response
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ==========================================================
+        // FITUR AUTO-LOGIN (SESSION MANAGEMENT)
+        // Pengecekan dilakukan sebelum halaman Login ditampilkan
+        // ==========================================================
+        val sharedPref = getSharedPreferences("FafaBitePrefs", Context.MODE_PRIVATE)
+        val idUser = sharedPref.getInt("ID_USER", 0)
+        val roleUser = sharedPref.getString("ROLE_USER", "") ?: ""
+
+        // Jika ID bukan 0 dan role tidak kosong, berarti user MASIH LOGIN
+        if (idUser != 0 && roleUser.isNotEmpty()) {
+            masukSesuaiPeran(roleUser) // Langsung arahkan ke dashboard
+            return // Hentikan eksekusi kode di bawahnya agar tidak memuat form login
+        }
+        // ==========================================================
+
+        // Jika tidak ada data login, baru tampilkan halaman login
         setContentView(R.layout.activity_login)
 
         val etEmail = findViewById<EditText>(R.id.etEmail)
@@ -57,13 +74,9 @@ class LoginActivity : AppCompatActivity() {
                         if (loginResponse.sukses) {
                             Toast.makeText(this@LoginActivity, "Login berhasil!", Toast.LENGTH_SHORT).show()
 
-                            // --- 1. SIMPAN DATA KE SHAREDPREFERENCES ---
-                            // Kita bungkus pakai 'let' agar aman jika datanya null
+                            // --- SIMPAN DATA KE SHAREDPREFERENCES ---
                             loginResponse.data?.let { userData ->
-                                val sharedPref = getSharedPreferences("FafaBitePrefs", Context.MODE_PRIVATE)
                                 val editor = sharedPref.edit()
-
-                                // Pastikan penamaan id_user, nama_lengkap, dll sesuai dengan Model LoginResponse.kt kamu
                                 editor.putInt("ID_USER", userData.id_user)
                                 editor.putString("NAMA_USER", userData.nama_lengkap)
                                 editor.putString("EMAIL_USER", userData.email)
@@ -72,9 +85,9 @@ class LoginActivity : AppCompatActivity() {
                             }
                             // -------------------------------------------
 
-                            // 2. Panggil portal pemisah jalur berdasarkan role
-                            val roleUser = loginResponse.data?.role ?: ""
-                            masukSesuaiPeran(roleUser)
+                            // Panggil portal pemisah jalur berdasarkan role
+                            val currentRole = loginResponse.data?.role ?: ""
+                            masukSesuaiPeran(currentRole)
 
                         } else {
                             Toast.makeText(this@LoginActivity, loginResponse.pesan, Toast.LENGTH_SHORT).show()
@@ -99,11 +112,9 @@ class LoginActivity : AppCompatActivity() {
     private fun masukSesuaiPeran(role: String) {
         val intent: Intent
 
-        // Mengecek apakah user ini pembeli/konsumen atau pedagang
-        if (role.equals("konsumen", ignoreCase = true) || role.equals("pembeli", ignoreCase = true)) {
+        if (role.equals("pembeli", ignoreCase = true)) {
             intent = Intent(this, MainActivity::class.java)
-        } else if (role.equals("pedagang", ignoreCase = true)) {
-            // Arahkan ke RestoranMainActivity
+        } else if (role.equals("penjual", ignoreCase = true)) {
             intent = Intent(this, RestoranMainActivity::class.java)
         } else {
             Toast.makeText(this, "Akses ditolak: Peran tidak dikenali ($role)", Toast.LENGTH_SHORT).show()

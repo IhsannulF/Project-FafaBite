@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fafabite.R
 import com.example.fafabite.adapter.MakananAdapter
+import com.example.fafabite.adapter.MenuRestoranAdapter
 import com.example.fafabite.api.ApiConfig
 import com.example.fafabite.api.ResponseListProduk
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -105,7 +106,7 @@ class MenuRestoranActivity : AppCompatActivity() {
                     if (listMakanan.isNotEmpty()) {
                         // Jika ada data, pasang ke Adapter
                         rvMakanan.visibility = View.VISIBLE
-                        val adapter = MakananAdapter(listMakanan)
+                        val adapter = MenuRestoranAdapter(listMakanan)
                         rvMakanan.adapter = adapter
                     } else {
                         // Jika toko belum punya makanan sama sekali

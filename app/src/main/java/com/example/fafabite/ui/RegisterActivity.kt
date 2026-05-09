@@ -19,7 +19,7 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        // 1. Tangkap elemen dari desain XML sesuai ID yang baru
+        // 1. Tangkap elemen dari desain XML sesuai ID
         val tvHeaderRegister = findViewById<TextView>(R.id.tvHeaderRegister)
         val etName = findViewById<EditText>(R.id.etName)
         val etEmailReg = findViewById<EditText>(R.id.etEmailReg)
@@ -49,17 +49,16 @@ class RegisterActivity : AppCompatActivity() {
             btnRegister.text = "Loading..."
             btnRegister.isEnabled = false
 
-            // 4. Panggil API Register via Retrofit (Peran: konsumen)
+            // 4. Panggil API Register via Retrofit (Peran: pembeli)
             ApiConfig.getApiService().registerUser(
-                namaLengkap = nama,
+                nama = nama,
                 email = email,
                 pass = password,
-                role = "konsumen",
-                namaToko = "-", // Kosongkan karena pembeli tidak punya toko
-                alamat = "-"    // Kosongkan karena pembeli tidak punya alamat toko
+                role = "pembeli", // SUDAH DISESUAIKAN DENGAN DATABASE
+                namaToko = null,  // Pembeli tidak punya nama toko
+                alamat = null     // Pembeli tidak punya alamat
             ).enqueue(object : Callback<LoginResponse> {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                    // Kembalikan teks tombol
                     btnRegister.text = "Create Account"
                     btnRegister.isEnabled = true
 
@@ -67,9 +66,8 @@ class RegisterActivity : AppCompatActivity() {
                         val responData = response.body()!!
 
                         if (responData.sukses) {
-                            Toast.makeText(this@RegisterActivity, "Pendaftaran Berhasil! Silakan Login.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@RegisterActivity, "Pendaftaran Pembeli Berhasil! Silakan Login.", Toast.LENGTH_SHORT).show()
 
-                            // Jika sukses, arahkan ke LoginActivity dan bersihkan riwayat halaman
                             val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(intent)

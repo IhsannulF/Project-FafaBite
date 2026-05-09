@@ -24,7 +24,7 @@ class RegisterRestoranActivity : AppCompatActivity() {
         // Mengambil semua inputan sesuai dengan ID di XML kamu
         val etNama = findViewById<EditText>(R.id.etNamaResto)
         val etEmail = findViewById<EditText>(R.id.etEmailResto)
-        val etAlamat = findViewById<EditText>(R.id.etAlamatResto) // <-- Ini tambahan untuk Alamat
+        val etAlamat = findViewById<EditText>(R.id.etAlamatResto)
         val etPassword = findViewById<EditText>(R.id.etPasswordResto)
 
         val btnDaftar = findViewById<Button>(R.id.btnRegisterRestoSubmit)
@@ -37,9 +37,10 @@ class RegisterRestoranActivity : AppCompatActivity() {
 
         // 2. Tombol Daftar Mitra Restoran
         btnDaftar.setOnClickListener {
+            // TANGKAP INPUTAN (Nama variabel di sini harus sama dengan yang dipanggil di API)
             val nama = etNama.text.toString().trim()
             val email = etEmail.text.toString().trim()
-            val alamat = etAlamat.text.toString().trim() // Ambil teks alamat
+            val alamat = etAlamat.text.toString().trim()
             val password = etPassword.text.toString().trim()
 
             // Validasi agar tidak ada kolom yang kosong (termasuk alamat)
@@ -52,17 +53,14 @@ class RegisterRestoranActivity : AppCompatActivity() {
             btnDaftar.text = "Loading..."
             btnDaftar.isEnabled = false
 
-            // 3. Panggil API Register via Retrofit dengan ROLE: "pedagang"
-            // CATATAN: Jika di database Laravel kamu ada kolom 'alamat',
-            // kamu perlu menambahkan parameter alamat di ApiService.kt nantinya.
-            // Sementara ini kita panggil sesuai fungsi di ApiService yang sudah ada.
+            // 3. Panggil API Register via Retrofit
             ApiConfig.getApiService().registerUser(
-                namaLengkap = nama,   // Nama user diisi dengan nama resto
-                email = email,
-                pass = password,
-                role = "pedagang",
-                namaToko = nama,      // Nama toko juga diisi dengan nama resto
-                alamat = alamat       // Alamat toko
+                nama = null,               // Dikosongkan karena akun penjual pakai nama toko
+                email = email,             // Menggunakan variabel email yang ditangkap di atas
+                pass = password,           // Menggunakan variabel password yang ditangkap di atas
+                role = "penjual",          // Role otomatis sebagai penjual
+                namaToko = nama,           // Menggunakan variabel nama (karena etNamaResto)
+                alamat = alamat            // Menggunakan variabel alamat yang ditangkap di atas
             ).enqueue(object : Callback<LoginResponse> {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     // Kembalikan teks tombol
@@ -80,11 +78,11 @@ class RegisterRestoranActivity : AppCompatActivity() {
                             startActivity(intent)
                             finish()
                         } else {
-                            // Jika masuk ke sini, berarti Laravel yang sengaja mengirim tulisan "Email sudah digunakan"
+                            // Jika masuk ke sini, berarti Laravel yang sengaja mengirim tulisan error (misal email sudah ada)
                             Toast.makeText(this@RegisterRestoranActivity, "Ditolak Server: ${responData.pesan}", Toast.LENGTH_LONG).show()
                         }
                     } else {
-                        // INI YANG PALING PENTING! Jika gagal karena sistem (misal tabel toko belum dibuat), pesan error aslinya akan muncul di sini.
+                        // INI YANG PALING PENTING! Jika gagal karena sistem, pesan error aslinya akan muncul di sini.
                         val errorBody = response.errorBody()?.string()
                         Toast.makeText(this@RegisterRestoranActivity, "Error ${response.code()}: $errorBody", Toast.LENGTH_LONG).show()
 

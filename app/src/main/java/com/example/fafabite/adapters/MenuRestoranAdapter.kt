@@ -26,7 +26,8 @@ class MenuRestoranAdapter(private val listMakanan: List<ProdukItem>) : RecyclerV
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_makanan, parent, false)
+        // INI YANG KITA UBAH
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_menu_penjual, parent, false)
         return ViewHolder(view)
     }
 

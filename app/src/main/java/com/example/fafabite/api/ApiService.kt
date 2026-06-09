@@ -1,6 +1,8 @@
 package com.example.fafabite.api
 
 import com.example.fafabite.models.LoginResponse
+import com.example.fafabite.models.ResponseCheckout
+import com.example.fafabite.models.ResponsePesananResto
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -66,19 +68,19 @@ interface ApiService {
         @Path("id_toko") idToko: String
     ): Call<ResponseListProduk>
 
-    // Mengambil daftar pesanan toko
-    @GET("pesanan/toko/{id_toko}")
+    // --- Fitur Ambil Pesanan Masuk (Sisi Restoran) ---
+    @GET("pesanan-toko/{id_toko}")
     fun getPesananToko(
         @Path("id_toko") idToko: Int
-    ): Call<ResponsePesanan>
+    ): Call<ResponsePesananResto>
 
-    // Mengupdate status pesanan (Terima/Tolak/Selesai)
+    // --- Fitur Update Status Pesanan (Terima / Tolak) ---
     @FormUrlEncoded
-    @POST("pesanan/update-status/{id}")
+    @POST("pesanan-update/{id}")
     fun updateStatusPesanan(
         @Path("id") idPesanan: Int,
-        @Field("status_pesanan") statusPesanan: String
-    ): Call<ResponseUpdateStatus>
+        @Field("status_pesanan") statusBaru: String
+    ): Call<ResponseCheckout>
 
     // Tambahkan ini di dalam interface ApiService
     @GET("toko/profil/{id_toko}")
@@ -89,4 +91,35 @@ interface ApiService {
     // --- Ambil Data Makanan untuk Beranda Pembeli ---
     @GET("beranda/makanan") // Pastikan URL ini sesuai dengan route di Laravel-mu
     fun getBerandaMakanan(): Call<ResponseBerandaMakanan>
+
+    @Multipart
+    @POST("produk/update/{id}")
+    fun updateProduk(
+        @Path("id") id: Int,
+        @Part("nama_makanan") namaMakanan: RequestBody,
+        @Part("harga_asli") hargaAsli: RequestBody,
+        @Part("harga_diskon") hargaDiskon: RequestBody,
+        @Part("stok") stok: RequestBody,
+        @Part("waktu_pickup") waktuPickup: RequestBody,
+        @Part("status") status: RequestBody,
+        @Part fotoMakanan: MultipartBody.Part? // Boleh kosong jika tidak ganti foto
+    ): Call<ResponseProduk> // <-- Menggunakan ResponseProduk yang samalass Response milikmu untuk tambah makanan
+
+    // --- Fitur Ambil Riwayat Pesanan Pembeli ---
+    @Headers("Accept: application/json")
+    @GET("riwayat-pesanan/{id_user}")
+    fun getRiwayatPesanan(
+        @Path("id_user") idUser: Int
+    ): Call<ResponseRiwayatPesanan>
+
+    // --- Fitur Checkout & Potong Saldo ---
+    @FormUrlEncoded
+    @POST("checkout")
+    fun prosesCheckout(
+        @Field("id_user") idUser: Int,
+        @Field("id_produk") idProduk: Int,
+        @Field("jumlah_pesan") jumlahPesan: Int
+    ): Call<ResponseCheckout>
+
+
 }

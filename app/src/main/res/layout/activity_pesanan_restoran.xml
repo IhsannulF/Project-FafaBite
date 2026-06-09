@@ -66,18 +66,6 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tabMenunggu"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:background="@drawable/bg_input_pill"
-                    android:backgroundTint="#E0E0E0"
-                    android:paddingHorizontal="20dp"
-                    android:paddingVertical="8dp"
-                    android:text="Menunggu"
-                    android:textColor="#757575" />
-
-                <TextView
                     android:id="@+id/tabDiproses"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -88,6 +76,20 @@
                     android:paddingVertical="8dp"
                     android:text="Diproses"
                     android:textColor="#757575" />
+
+                <TextView
+                    android:id="@+id/tabSiap"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:background="@drawable/bg_input_pill"
+                    android:backgroundTint="#E0E0E0"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="8dp"
+                    android:text="Siap Diambil"
+                    android:textColor="#757575" />
+
+
             </LinearLayout>
         </HorizontalScrollView>
 

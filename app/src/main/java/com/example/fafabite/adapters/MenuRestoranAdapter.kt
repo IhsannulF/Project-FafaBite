@@ -1,21 +1,27 @@
 package com.example.fafabite.adapter
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.fafabite.EditMakananActivity
 import com.example.fafabite.R
+import com.example.fafabite.api.ApiConfig
 import com.example.fafabite.api.ProdukItem
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.text.NumberFormat
 import java.util.*
 
 class MenuRestoranAdapter(private val listMakanan: List<ProdukItem>) : RecyclerView.Adapter<MenuRestoranAdapter.ViewHolder>() {
 
+    // HANYA ADA SATU VIEWHOLDER YANG BENAR DI SINI
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvNama: TextView = view.findViewById(R.id.tvNamaMakanan)
         val tvStatus: TextView = view.findViewById(R.id.tvStatusMakanan)
@@ -26,7 +32,6 @@ class MenuRestoranAdapter(private val listMakanan: List<ProdukItem>) : RecyclerV
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        // INI YANG KITA UBAH
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_menu_penjual, parent, false)
         return ViewHolder(view)
     }
@@ -36,12 +41,10 @@ class MenuRestoranAdapter(private val listMakanan: List<ProdukItem>) : RecyclerV
         val formatRupiah = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
 
         holder.tvNama.text = makanan.namaMakanan
-
         holder.tvHargaAsli.text = formatRupiah.format(makanan.hargaAsli).replace("Rp", "Rp ")
         holder.tvHargaAsli.paintFlags = holder.tvHargaAsli.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
         holder.tvHargaDiskon.text = formatRupiah.format(makanan.hargaDiskon).replace("Rp", "Rp ")
 
-        // Penjual tidak butuh melihat "Nama Toko" di daftar menunya sendiri
         val jamPickup = makanan.waktuPickup?.substringAfter(" ")?.substringBeforeLast(":") ?: "00:00"
         holder.tvInfo.text = "Stok: ${makanan.stok} Porsi • Pickup: $jamPickup"
 
@@ -56,14 +59,45 @@ class MenuRestoranAdapter(private val listMakanan: List<ProdukItem>) : RecyclerV
         }
 
         if (!makanan.fotoMakanan.isNullOrEmpty()) {
-            val baseUrl = "http://192.168.1.61:8000/file-makanan/" // Pastikan IP ini masih sama dengan IP laptopmu saat ini
+            val urlFoto = ApiConfig.IMAGE_URL + makanan.fotoMakanan
             Glide.with(holder.itemView.context)
-                .load(baseUrl + makanan.fotoMakanan)
+                .load(urlFoto)
                 .skipMemoryCache(true)
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
                 .placeholder(R.drawable.bg_input_pill)
                 .error(android.R.drawable.ic_menu_report_image)
                 .centerCrop()
                 .into(holder.ivFoto)
+        }
+
+        // --- BOTTOM SHEET DIALOG UNTUK EDIT/HAPUS ---
+        holder.itemView.setOnClickListener {
+            val dialog = BottomSheetDialog(holder.itemView.context)
+            val view = LayoutInflater.from(holder.itemView.context).inflate(R.layout.dialog_edit_menu, null)
+
+            val btnEdit = view.findViewById<Button>(R.id.btnDialogEdit)
+            val btnHapus = view.findViewById<Button>(R.id.btnDialogHapus)
+
+            btnEdit.setOnClickListener {
+                val intent = Intent(holder.itemView.context, EditMakananActivity::class.java)
+                intent.putExtra("ID_MAKANAN", makanan.id)
+                intent.putExtra("NAMA_MAKANAN", makanan.namaMakanan)
+                intent.putExtra("HARGA_ASLI", makanan.hargaAsli)
+                intent.putExtra("HARGA_DISKON", makanan.hargaDiskon)
+                intent.putExtra("STOK_MAKANAN", makanan.stok)
+                intent.putExtra("WAKTU_PICKUP", makanan.waktuPickup)
+                intent.putExtra("STATUS_MAKANAN", makanan.status)
+                intent.putExtra("FOTO_MAKANAN", makanan.fotoMakanan)
+                holder.itemView.context.startActivity(intent)
+                dialog.dismiss()
+            }
+
+            btnHapus.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            dialog.setContentView(view)
+            dialog.show()
         }
     }
 

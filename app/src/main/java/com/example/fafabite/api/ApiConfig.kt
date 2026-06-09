@@ -5,7 +5,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiConfig {
     // Pastikan persis seperti ini: ada http:// di depan dan diakhiri garis miring /
-    private const val BASE_URL = "http://192.168.1.6:8000/api/"
+    private const val BASE_URL = "http://192.168.110.189:8000/api/"
+
+    const val IMAGE_URL = "http://192.168.110.189:8000/file-makanan/"
 
     fun getApiService(): ApiService {
         val retrofit = Retrofit.Builder()

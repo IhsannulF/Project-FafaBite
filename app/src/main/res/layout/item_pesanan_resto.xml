@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:layout_marginHorizontal="24dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#F5F9FF"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Kode Order:"
+                android:textColor="@color/text_grey"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvKodeOrderResto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FAFA-8892"
+                android:textColor="@color/fafa_blue_primary"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_input_pill"
+                    android:src="@android:drawable/ic_menu_myplaces"
+                    android:padding="6dp"
+                    app:tint="@color/fafa_blue_primary"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvNamaPembeli"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nama Pembeli"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_dark" />
+
+                    <TextView
+                        android:id="@+id/tvWaktuPesanResto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Waktu Pesan"
+                        android:textSize="12sp"
+                        android:textColor="@color/text_grey" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#EEEEEE"
+                android:layout_marginVertical="12dp" />
+
+            <TextView
+                android:id="@+id/tvMenuDipesan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="2x Udon Mentah"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_dark" />
+
+            <TextView
+                android:id="@+id/tvTotalPendapatan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Total Pendapatan: Rp 40.000"
+                android:textColor="@color/fafa_blue_primary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/layoutAksiMenunggu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <Button
+                    android:id="@+id/btnTolakPesanan"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Tolak"
+                    android:textAllCaps="false"
+                    android:textColor="#F44336"
+                    app:strokeColor="#F44336"
+                    app:cornerRadius="12dp"/>
+
+                <Button
+                    android:id="@+id/btnTerimaPesanan"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Terima"
+                    android:textAllCaps="false"
+                    android:backgroundTint="@color/fafa_blue_primary"
+                    app:cornerRadius="12dp"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnSiapDiambil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Tandai Siap Diambil"
+                android:textAllCaps="false"
+                android:backgroundTint="#4CAF50"
+                app:cornerRadius="12dp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnSelesaikanPesanan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Selesaikan Pesanan"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/fafa_blue_primary"
+                app:cornerRadius="12dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

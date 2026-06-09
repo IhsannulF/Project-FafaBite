@@ -62,16 +62,15 @@ class MakananAdapter(private val listMakanan: List<MakananBeranda>) : RecyclerVi
 
         // 5. Foto Makanan dengan Glide
         if (!makanan.fotoMakanan.isNullOrEmpty()) {
-            // IP LAPTOP
-            val baseUrl = "http://192.168.1.6:8000/file-makanan/"
-            val urlFoto = baseUrl + makanan.fotoMakanan
+            // LANGSUNG AMBIL DARI ApiConfig
+            val urlFoto = com.example.fafabite.api.ApiConfig.IMAGE_URL + makanan.fotoMakanan
 
             Glide.with(holder.itemView.context)
                 .load(urlFoto)
                 .skipMemoryCache(true)
                 .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
                 .placeholder(R.drawable.bg_input_pill)
-                .error(android.R.drawable.ic_menu_report_image)
+                .error(android.R.drawable.ic_menu_report_image) // Ini ikon tanda seru yang muncul kalau gagal
                 .centerCrop()
                 .into(holder.ivFoto)
         }

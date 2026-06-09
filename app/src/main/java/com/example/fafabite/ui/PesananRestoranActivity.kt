@@ -1,39 +1,43 @@
 package com.example.fafabite.ui
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.fafabite.R
-import com.example.fafabite.adapter.PesananAdapter
+import com.example.fafabite.adapter.PesananRestoAdapter
 import com.example.fafabite.api.ApiConfig
-import com.example.fafabite.api.PesananItem
-import com.example.fafabite.api.ResponsePesanan
-import com.example.fafabite.api.ResponseUpdateStatus
+import com.example.fafabite.models.PesananRestoItem
+import com.example.fafabite.models.ResponseCheckout
+import com.example.fafabite.models.ResponsePesananResto
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class PesananRestoranActivity : AppCompatActivity() {
+class PesananRestoranActivity : AppCompatActivity(), PesananRestoAdapter.OnAksiPesananListener {
 
     private lateinit var rvPesanan: RecyclerView
-    private lateinit var adapter: PesananAdapter
-    private var listPesananFull = ArrayList<PesananItem>()
+    private lateinit var adapter: PesananRestoAdapter
+    private var listPesananAsli: List<PesananRestoItem> = listOf()
+
+    private lateinit var tabSemua: TextView
+    private lateinit var tabDiproses: TextView
+    private lateinit var tabSiap: TextView
+
+    private val idTokoSaatIni = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pesanan_restoran)
 
-        // ==========================================
-        // 1. LOGIKA NAVBAR BAWAH (Dari Kodingan Lama)
-        // ==========================================
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavResto)
-
-        // Set ikon "Pesanan" menyala
         bottomNav.selectedItemId = R.id.nav_pesanan_resto
 
         bottomNav.setOnItemSelectedListener { item ->
@@ -48,10 +52,9 @@ class PesananRestoranActivity : AppCompatActivity() {
                     overridePendingTransition(0, 0)
                     true
                 }
-                R.id.nav_pesanan_resto -> true // Tetap di sini
-
+                R.id.nav_pesanan_resto -> true
                 R.id.nav_profil_resto -> {
-                    startActivity(Intent(this, ProfilRestoranActivity::class.java)) // Pastikan class ini sudah kamu buat ya
+                    startActivity(Intent(this, ProfilRestoranActivity::class.java))
                     overridePendingTransition(0, 0)
                     true
                 }
@@ -59,99 +62,140 @@ class PesananRestoranActivity : AppCompatActivity() {
             }
         }
 
-        // ==========================================
-        // 2. LOGIKA RECYCLERVIEW & ADAPTER BARU
-        // ==========================================
         rvPesanan = findViewById(R.id.rvPesanan)
         rvPesanan.layoutManager = LinearLayoutManager(this)
 
-        adapter = PesananAdapter(
-            listPesananFull,
-            onUpdateStatus = { id, status -> prosesUpdateStatus(id, status) },
-            onScanQR = { nomorOrder -> Toast.makeText(this, "Membuka Kamera untuk Scan QR Order $nomorOrder...", Toast.LENGTH_SHORT).show() }
-        )
+        tabSemua = findViewById(R.id.tabSemua)
+        tabDiproses = findViewById(R.id.tabDiproses)
+        tabSiap = findViewById(R.id.tabSiap)
+
+        adapter = PesananRestoAdapter(listPesananAsli, this)
         rvPesanan.adapter = adapter
 
-        // ==========================================
-        // 3. AMBIL DATA DARI API LARAVEL
-        // ==========================================
-        getDataPesanan(1) // Ganti angka 1 dengan ID Toko yang sedang login nanti
-
-        // ==========================================
-        // 4. PASANG LOGIKA FILTER TAB
-        // ==========================================
+        ambilDataPesananToko()
         setupFilter()
     }
 
-    private fun getDataPesanan(idToko: Int) {
-        ApiConfig.getApiService().getPesananToko(idToko).enqueue(object : Callback<ResponsePesanan> {
-            override fun onResponse(call: Call<ResponsePesanan>, response: Response<ResponsePesanan>) {
-                if (response.isSuccessful) {
-                    val data = response.body()?.data ?: listOf()
-                    listPesananFull.clear()
-                    listPesananFull.addAll(data)
-                    adapter.updateData(listPesananFull) // Tampilkan semua di awal
+    private fun ambilDataPesananToko() {
+        ApiConfig.getApiService().getPesananToko(idTokoSaatIni).enqueue(object : Callback<ResponsePesananResto> {
+            override fun onResponse(call: Call<ResponsePesananResto>, response: Response<ResponsePesananResto>) {
+                if (response.isSuccessful && response.body() != null) {
+                    listPesananAsli = response.body()!!.data
+
+                    // Tampilkan semua kecuali yang batal dan selesai
+                    val dataAktif = listPesananAsli.filter {
+                        !it.statusPesanan.equals("batal", ignoreCase = true) &&
+                                !it.statusPesanan.equals("selesai", ignoreCase = true)
+                    }
+                    adapter.perbaruiData(dataAktif)
+                } else {
+                    val errorAsli = response.errorBody()?.string()
+                    Toast.makeText(this@PesananRestoranActivity, "Gagal API: $errorAsli", Toast.LENGTH_LONG).show()
                 }
             }
 
-            override fun onFailure(call: Call<ResponsePesanan>, t: Throwable) {
-                Toast.makeText(this@PesananRestoranActivity, "Koneksi Error: ${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun prosesUpdateStatus(idPesanan: Int, statusBaru: String) {
-        ApiConfig.getApiService().updateStatusPesanan(idPesanan, statusBaru).enqueue(object : Callback<ResponseUpdateStatus> {
-            override fun onResponse(call: Call<ResponseUpdateStatus>, response: Response<ResponseUpdateStatus>) {
-                if (response.isSuccessful) {
-                    Toast.makeText(this@PesananRestoranActivity, "Berhasil diupdate!", Toast.LENGTH_SHORT).show()
-                    getDataPesanan(1) // Refresh data agar posisi kartu berpindah otomatis
-                }
-            }
-
-            override fun onFailure(call: Call<ResponseUpdateStatus>, t: Throwable) {
-                Toast.makeText(this@PesananRestoranActivity, "Gagal update status", Toast.LENGTH_SHORT).show()
+            override fun onFailure(call: Call<ResponsePesananResto>, t: Throwable) {
+                Toast.makeText(this@PesananRestoranActivity, "Error Jaringan: ${t.message}", Toast.LENGTH_LONG).show()
             }
         })
     }
 
     private fun setupFilter() {
-        val tabSemua: TextView = findViewById(R.id.tabSemua)
-        val tabMenunggu: TextView = findViewById(R.id.tabMenunggu)
-        val tabDiproses: TextView = findViewById(R.id.tabDiproses)
-
         tabSemua.setOnClickListener {
-            updateTabUI(tabSemua, listOf(tabMenunggu, tabDiproses))
-            adapter.updateData(listPesananFull)
-        }
-
-        tabMenunggu.setOnClickListener {
-            updateTabUI(tabMenunggu, listOf(tabSemua, tabDiproses))
-            val filter = listPesananFull.filter { it.statusPesanan.lowercase() == "menunggu" }
-            adapter.updateData(filter)
+            updateTabUI(tabSemua, listOf(tabDiproses, tabSiap))
+            val dataFilter = listPesananAsli.filter {
+                !it.statusPesanan.equals("batal", ignoreCase = true) &&
+                        !it.statusPesanan.equals("selesai", ignoreCase = true)
+            }
+            adapter.perbaruiData(dataFilter)
         }
 
         tabDiproses.setOnClickListener {
-            updateTabUI(tabDiproses, listOf(tabSemua, tabMenunggu))
-            // Menangkap berbagai variasi kata "diproses" di database
-            val filter = listPesananFull.filter {
-                it.statusPesanan.lowercase() == "disiapkan" ||
-                        it.statusPesanan.lowercase() == "proses" ||
-                        it.statusPesanan.lowercase() == "diproses"
+            updateTabUI(tabDiproses, listOf(tabSemua, tabSiap))
+            // Menggabungkan pesanan baru masuk (menunggu) dengan yang sedang dibuat (disiapkan)
+            val dataFilter = listPesananAsli.filter {
+                it.statusPesanan.equals("menunggu", ignoreCase = true) ||
+                        it.statusPesanan.equals("disiapkan", ignoreCase = true)
             }
-            adapter.updateData(filter)
+            adapter.perbaruiData(dataFilter)
+        }
+
+        tabSiap.setOnClickListener {
+            updateTabUI(tabSiap, listOf(tabSemua, tabDiproses))
+            val dataFilter = listPesananAsli.filter { it.statusPesanan.equals("siap_diambil", ignoreCase = true) }
+            adapter.perbaruiData(dataFilter)
         }
     }
 
     private fun updateTabUI(activeTab: TextView, inactiveTabs: List<TextView>) {
-        activeTab.setBackgroundResource(R.drawable.bg_input_pill)
-        activeTab.backgroundTintList = getColorStateList(R.color.fafa_blue_primary)
-        activeTab.setTextColor(getColor(R.color.white))
+        val warnaAktifBg = ContextCompat.getColor(this, R.color.fafa_blue_primary)
+        val warnaAktifTeks = Color.WHITE
+        val warnaTidakAktifBg = Color.parseColor("#E0E0E0")
+        val warnaTidakAktifTeks = Color.parseColor("#757575")
+
+        activeTab.backgroundTintList = android.content.res.ColorStateList.valueOf(warnaAktifBg)
+        activeTab.setTextColor(warnaAktifTeks)
 
         for (tab in inactiveTabs) {
-            tab.setBackgroundResource(R.drawable.bg_input_pill)
-            tab.backgroundTintList = getColorStateList(R.color.text_grey_light)
-            tab.setTextColor(getColor(R.color.text_grey))
+            tab.backgroundTintList = android.content.res.ColorStateList.valueOf(warnaTidakAktifBg)
+            tab.setTextColor(warnaTidakAktifTeks)
         }
+    }
+
+    override fun onTerima(pesanan: PesananRestoItem) {
+        kirimUpdateStatusKeServer(pesanan.id, "disiapkan")
+    }
+
+    override fun onTolak(pesanan: PesananRestoItem) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Batalkan Pesanan?")
+        builder.setMessage("Apakah Anda yakin ingin menolak pesanan ini? Saldo akan dikembalikan ke pembeli.")
+        builder.setPositiveButton("Ya, Tolak") { dialog, _ ->
+            kirimUpdateStatusKeServer(pesanan.id, "batal")
+            dialog.dismiss()
+        }
+        builder.setNegativeButton("Kembali") { dialog, _ -> dialog.dismiss() }
+        builder.show()
+    }
+
+    override fun onSiapDiambil(pesanan: PesananRestoItem) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Pesanan Siap?")
+        builder.setMessage("Tandai pesanan ini siap diambil oleh pembeli?")
+        builder.setPositiveButton("Ya, Sudah Siap") { dialog, _ ->
+            kirimUpdateStatusKeServer(pesanan.id, "siap_diambil")
+            dialog.dismiss()
+        }
+        builder.setNegativeButton("Batal") { dialog, _ -> dialog.dismiss() }
+        builder.show()
+    }
+
+    override fun onSelesai(pesanan: PesananRestoItem) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Selesaikan Pesanan?")
+        builder.setMessage("Pastikan pembeli sudah mengambil makanannya. Tandai transaksi sebagai selesai?")
+        builder.setPositiveButton("Ya, Selesai") { dialog, _ ->
+            kirimUpdateStatusKeServer(pesanan.id, "selesai")
+            dialog.dismiss()
+        }
+        builder.setNegativeButton("Batal") { dialog, _ -> dialog.dismiss() }
+        builder.show()
+    }
+
+    private fun kirimUpdateStatusKeServer(idPesanan: Int, statusBaru: String) {
+        ApiConfig.getApiService().updateStatusPesanan(idPesanan, statusBaru).enqueue(object : Callback<ResponseCheckout> {
+            override fun onResponse(call: Call<ResponseCheckout>, response: Response<ResponseCheckout>) {
+                if (response.isSuccessful) {
+                    Toast.makeText(this@PesananRestoranActivity, "Pesanan berhasil diupdate!", Toast.LENGTH_SHORT).show()
+                    ambilDataPesananToko()
+                } else {
+                    Toast.makeText(this@PesananRestoranActivity, "Gagal memperbarui status", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseCheckout>, t: Throwable) {
+                Toast.makeText(this@PesananRestoranActivity, "Error jaringan", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

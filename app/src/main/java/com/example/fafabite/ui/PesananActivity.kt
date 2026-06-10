@@ -1,5 +1,6 @@
 package com.example.fafabite.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -40,16 +41,19 @@ class PesananActivity : AppCompatActivity() {
                 R.id.nav_home -> {
                     startActivity(Intent(this, MainActivity::class.java))
                     overridePendingTransition(0, 0)
+                    finish() // Menutup halaman agar tidak menumpuk di memori
                     true
                 }
                 R.id.nav_riwayat -> {
                     startActivity(Intent(this, RiwayatActivity::class.java))
                     overridePendingTransition(0, 0)
+                    finish()
                     true
                 }
                 R.id.nav_akun -> {
                     startActivity(Intent(this, AkunActivity::class.java))
                     overridePendingTransition(0, 0)
+                    finish()
                     true
                 }
                 R.id.nav_pesanan -> true // Tetap di sini
@@ -66,14 +70,30 @@ class PesananActivity : AppCompatActivity() {
         // 2. PENGATURAN TAMPILAN DATA & ADAPTER
         // ==========================================
         rvPesananAktif = findViewById(R.id.rvPesananAktif)
-        layoutKosong = findViewById(R.id.layoutKosong) // Pastikan ID ini sudah ditambahkan di activity_pesanan.xml
+        layoutKosong = findViewById(R.id.layoutKosong)
 
         rvPesananAktif.layoutManager = LinearLayoutManager(this)
         adapter = PesananAktifAdapter(listOf())
         rvPesananAktif.adapter = adapter
+    }
 
-        // Tarik data API (Hardcode ID User = 1)
-        ambilPesananAktif(1)
+    // ==========================================
+    // 3. AMBIL DATA DINAMIS DENGAN ONRESUME
+    // ==========================================
+    override fun onResume() {
+        super.onResume()
+
+        // Mengambil ID User secara dinamis dari SharedPreferences
+        val sharedPref = getSharedPreferences("FafaBitePrefs", Context.MODE_PRIVATE)
+        val idUserSaatIni = sharedPref.getInt("ID_USER", 0)
+
+        if (idUserSaatIni != 0) {
+            ambilPesananAktif(idUserSaatIni)
+        } else {
+            Toast.makeText(this, "Sesi login tidak valid, silakan login ulang", Toast.LENGTH_SHORT).show()
+            rvPesananAktif.visibility = View.GONE
+            layoutKosong.visibility = View.VISIBLE
+        }
     }
 
     private fun ambilPesananAktif(idUser: Int) {
@@ -98,7 +118,6 @@ class PesananActivity : AppCompatActivity() {
                         adapter.perbaruiData(pesananAktif)
                     }
                 } else {
-                    // Jika gagal narik data, anggap kosong
                     rvPesananAktif.visibility = View.GONE
                     layoutKosong.visibility = View.VISIBLE
                 }

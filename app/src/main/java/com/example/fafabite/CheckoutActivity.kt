@@ -1,5 +1,6 @@
 package com.example.fafabite
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -121,8 +122,15 @@ class CheckoutActivity : AppCompatActivity() {
     private fun lakukanPembayaranKeServer(idProduk: Int, jumlahPesan: Int) {
         val btnBayar = findViewById<Button>(R.id.btnBayar)
 
-        // Hardcode ID User untuk testing sementara = 1 (Pastikan User ID 1 punya saldo di database)
-        val idUserSaatIni = 1
+        // AMBIL ID USER DARI SHAREDPREFERENCES
+        val sharedPref = getSharedPreferences("FafaBitePrefs", Context.MODE_PRIVATE)
+        val idUserSaatIni = sharedPref.getInt("ID_USER", 0)
+
+        // Validasi keamanan jika data ID tidak terbaca
+        if (idUserSaatIni == 0) {
+            Toast.makeText(this, "Sesi login tidak valid, silakan login ulang.", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         btnBayar.text = "Memproses..."
         btnBayar.isEnabled = false

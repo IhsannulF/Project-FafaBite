@@ -226,4 +226,27 @@ class ProdukController extends Controller
         }
     }
 
+    // ==========================================
+    // 6. FITUR HAPUS DATA MAKANAN
+    // ==========================================
+    public function destroy($id)
+    {
+        $produk = \App\Models\Produk::find($id);
+
+        if (!$produk) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Data makanan tidak ditemukan'
+            ], 404);
+        }
+
+        // Hapus data dari database
+        $produk->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Menu makanan berhasil dihapus'
+        ]);
+    }
+
 }

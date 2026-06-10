@@ -9,12 +9,12 @@ use Illuminate\Http\Request;
 class TokoController extends Controller
 {
     // Fungsi untuk mengambil data profil toko
-    public function getProfil($id_toko)
+    public function getProfil($id_user)
     {
-        // Mencari toko di database berdasarkan id_toko
-        $toko = Toko::where('id_toko', $id_toko)->first();
+        // Iki yang paling penting: Cari berdasarkan 'id_user', BUKAN 'id_toko'
+        $toko = Toko::where('id_user', $id_user)->first();
 
-        // Jika ID toko tidak ada di database, kirim pesan error
+        // Jika data toko tidak ada di database, kirim pesan error
         if (!$toko) {
             return response()->json([
                 'status' => 'error',

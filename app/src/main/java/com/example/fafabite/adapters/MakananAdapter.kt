@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.fafabite.CheckoutActivity
@@ -36,20 +37,16 @@ class MakananAdapter(private val listMakanan: List<MakananBeranda>) : RecyclerVi
         val makanan = listMakanan[position]
         val formatRupiah = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
 
-        // 1. Set Nama Makanan
         holder.tvNama.text = makanan.namaMakanan
 
-        // 2. Set Harga (Dengan efek coret pada harga asli)
         holder.tvHargaAsli.text = formatRupiah.format(makanan.hargaAsli).replace("Rp", "Rp ")
         holder.tvHargaAsli.paintFlags = holder.tvHargaAsli.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
 
         holder.tvHargaDiskon.text = formatRupiah.format(makanan.hargaDiskon).replace("Rp", "Rp ")
 
-        // 3. Set Info (Menggabungkan Nama Toko, Stok, dan Pickup)
         val jamPickup = makanan.waktuPickup?.substringAfter(" ")?.substringBeforeLast(":") ?: "00:00"
         holder.tvInfo.text = "${makanan.namaToko} • Stok: ${makanan.stok} • Pickup: $jamPickup"
 
-        // 4. Logika Badge Status
         if (makanan.stok > 0 && makanan.status.equals("tersedia", ignoreCase = true)) {
             holder.tvStatus.text = "Tersedia"
             holder.tvStatus.setTextColor(Color.parseColor("#4CAF50"))
@@ -60,9 +57,7 @@ class MakananAdapter(private val listMakanan: List<MakananBeranda>) : RecyclerVi
             holder.tvStatus.setBackgroundColor(Color.parseColor("#FFEBEE"))
         }
 
-        // 5. Foto Makanan dengan Glide
         if (!makanan.fotoMakanan.isNullOrEmpty()) {
-            // LANGSUNG AMBIL DARI ApiConfig
             val urlFoto = com.example.fafabite.api.ApiConfig.IMAGE_URL + makanan.fotoMakanan
 
             Glide.with(holder.itemView.context)
@@ -70,17 +65,23 @@ class MakananAdapter(private val listMakanan: List<MakananBeranda>) : RecyclerVi
                 .skipMemoryCache(true)
                 .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
                 .placeholder(R.drawable.bg_input_pill)
-                .error(android.R.drawable.ic_menu_report_image) // Ini ikon tanda seru yang muncul kalau gagal
+                .error(android.R.drawable.ic_menu_report_image)
                 .centerCrop()
                 .into(holder.ivFoto)
         }
 
         // Logika saat kartu makanan diklik
         holder.itemView.setOnClickListener {
+            // VALIDASI: Jika stok habis, jangan buka halaman Checkout
+            if (makanan.stok <= 0 || !makanan.status.equals("tersedia", ignoreCase = true)) {
+                Toast.makeText(holder.itemView.context, "Maaf, menu makanan ini sudah habis!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val intent = Intent(holder.itemView.context, CheckoutActivity::class.java)
             intent.putExtra("ID_MAKANAN", makanan.id)
             intent.putExtra("NAMA_MAKANAN", makanan.namaMakanan)
-            intent.putExtra("HARGA_MAKANAN", makanan.hargaDiskon) // Kita pakai harga diskon
+            intent.putExtra("HARGA_MAKANAN", makanan.hargaDiskon)
             intent.putExtra("FOTO_MAKANAN", makanan.fotoMakanan)
             intent.putExtra("NAMA_TOKO", makanan.namaToko)
             intent.putExtra("STOK_MAKANAN", makanan.stok)

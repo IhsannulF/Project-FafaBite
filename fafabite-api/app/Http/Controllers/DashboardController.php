@@ -15,26 +15,39 @@ class DashboardController extends Controller
         try {
             $toko = Toko::find($id_toko);
             $namaToko = $toko ? $toko->nama_toko : 'Toko Tidak Ditemukan';
-            $hariIni = Carbon::today();
+            
+            // 1. menggunakan zona waktu Jakarta (WIB)
+            $hariIni = Carbon::now('Asia/Jakarta')->toDateString();
 
             // Hitung Angka-angka Statistik
-            $pendapatanHariIni = Pesanan::where('id_toko', $id_toko)->whereDate('created_at', $hariIni)->where('status_pesanan', '!=', 'batal')->sum('total_harga');
-            $pesananBaru = Pesanan::where('id_toko', $id_toko)->where('status_pesanan', 'menunggu')->count();
+            $pendapatanHariIni = Pesanan::where('id_toko', $id_toko)
+                ->whereDate('created_at', $hariIni) // Filter pasti akurat ke hari ini
+                ->where('status_pesanan', '!=', 'batal')
+                ->sum('total_harga');
+
+            $pesananBaru = Pesanan::where('id_toko', $id_toko)
+                ->where('status_pesanan', 'menunggu')
+                ->count();
+
             $sisaStok = Produk::where('id_toko', $id_toko)->sum('stok');
-            $stokTerjual = Pesanan::where('id_toko', $id_toko)->where('status_pesanan', '!=', 'batal')->sum('jumlah_pesan');
+
+            // 2. TAMBAHAN: Agar "Stok Terjual" juga menampilkan angka hari ini saja
+            $stokTerjual = Pesanan::where('id_toko', $id_toko)
+                ->whereDate('created_at', $hariIni) // Tambahkan filter tanggal di sini juga
+                ->where('status_pesanan', '!=', 'batal')
+                ->sum('jumlah_pesan');
 
             // --- BAGIAN BARU: Ambil Daftar Antrean Pesanan "Butuh Perhatian" ---
             $orderButuhPerhatian = Pesanan::with(['user', 'produk'])
                 ->where('id_toko', $id_toko)
                 ->where('status_pesanan', 'menunggu')
-                ->latest() // Urutkan dari yang paling baru
-                ->take(5)  // Ambil maksimal 5 data saja agar tidak berat
+                ->latest() 
+                ->take(5)  
                 ->get()
                 ->map(function ($order) {
-                    // Format datanya agar gampang dibaca oleh Android
                     return [
                         'nomor_order' => $order->nomor_order,
-                        'nama_pemesan' => $order->user ? $order->user->name : 'Tanpa Nama', // Ambil nama dari tabel users
+                        'nama_pemesan' => $order->user ? $order->user->name : 'Tanpa Nama',
                         'detail_pesanan' => $order->jumlah_pesan . 'x ' . ($order->produk ? $order->produk->nama_makanan : 'Produk Terhapus'),
                         'status' => $order->status_pesanan
                     ];
@@ -49,7 +62,7 @@ class DashboardController extends Controller
                     'pesanan_baru' => (int) $pesananBaru,
                     'stok_terjual' => (int) $stokTerjual,
                     'sisa_stok' => (int) $sisaStok,
-                    'order_butuh_perhatian' => $orderButuhPerhatian // Masukkan ke dalam paketan
+                    'order_butuh_perhatian' => $orderButuhPerhatian 
                 ]
             ]);
 

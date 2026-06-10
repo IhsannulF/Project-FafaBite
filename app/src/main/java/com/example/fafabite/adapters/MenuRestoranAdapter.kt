@@ -15,13 +15,13 @@ import com.example.fafabite.EditMakananActivity
 import com.example.fafabite.R
 import com.example.fafabite.api.ApiConfig
 import com.example.fafabite.api.ProdukItem
+import com.example.fafabite.ui.MenuRestoranActivity
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.text.NumberFormat
 import java.util.*
 
 class MenuRestoranAdapter(private val listMakanan: List<ProdukItem>) : RecyclerView.Adapter<MenuRestoranAdapter.ViewHolder>() {
 
-    // HANYA ADA SATU VIEWHOLDER YANG BENAR DI SINI
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvNama: TextView = view.findViewById(R.id.tvNamaMakanan)
         val tvStatus: TextView = view.findViewById(R.id.tvStatusMakanan)
@@ -78,6 +78,7 @@ class MenuRestoranAdapter(private val listMakanan: List<ProdukItem>) : RecyclerV
             val btnEdit = view.findViewById<Button>(R.id.btnDialogEdit)
             val btnHapus = view.findViewById<Button>(R.id.btnDialogHapus)
 
+            // Aksi Edit
             btnEdit.setOnClickListener {
                 val intent = Intent(holder.itemView.context, EditMakananActivity::class.java)
                 intent.putExtra("ID_MAKANAN", makanan.id)
@@ -92,8 +93,14 @@ class MenuRestoranAdapter(private val listMakanan: List<ProdukItem>) : RecyclerV
                 dialog.dismiss()
             }
 
+            // Aksi Hapus
             btnHapus.setOnClickListener {
-                dialog.dismiss()
+                dialog.dismiss() // Tutup Bottom Sheet dulu
+
+                // Panggil pop-up konfirmasi yang ada di MenuRestoranActivity
+                if (holder.itemView.context is MenuRestoranActivity) {
+                    (holder.itemView.context as MenuRestoranActivity).konfirmasiHapusMakanan(makanan.id, makanan.namaMakanan ?: "Menu ini")
+                }
             }
 
             dialog.setContentView(view)

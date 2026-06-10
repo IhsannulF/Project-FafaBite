@@ -47,21 +47,43 @@ class RiwayatPesananAdapter(private var listRiwayat: List<RiwayatPesananItem>) :
         val jamInput = item.createdAt?.substringAfter("T")?.substringBeforeLast(".") ?: "-"
         holder.tvTanggal.text = "$tanggalInput • $jamInput"
 
-        // LOGIKA BADGE WARNA SESUAI STATUS PESANAN
-        if (item.statusPesanan.equals("Selesai", ignoreCase = true)) {
-            holder.tvStatus.text = "Selesai"
-            holder.tvStatus.setTextColor(Color.parseColor("#4CAF50")) // Teks Hijau
-            holder.tvStatus.setBackgroundColor(Color.parseColor("#E8F5E9")) // Background Hijau Muda
+        // ===================================================
+        // LOGIKA BADGE WARNA SESUAI STATUS PESANAN (UPDATE)
+        // ===================================================
+        when (item.statusPesanan?.lowercase()) {
+            "selesai" -> {
+                holder.tvStatus.text = "Selesai"
+                holder.tvStatus.setTextColor(Color.parseColor("#4CAF50")) // Teks Hijau
+                holder.tvStatus.setBackgroundColor(Color.parseColor("#E8F5E9")) // Background Hijau Muda
 
-            holder.btnKiri.visibility = View.VISIBLE // Tombol Beri Nilai muncul
-            holder.btnKanan.text = "Beli Lagi"
-        } else {
-            holder.tvStatus.text = "Diproses"
-            holder.tvStatus.setTextColor(Color.parseColor("#2196F3")) // Teks Biru
-            holder.tvStatus.setBackgroundColor(Color.parseColor("#E3F2FD")) // Background Biru Muda
+                holder.btnKiri.visibility = View.VISIBLE // Tombol Beri Nilai muncul
+                holder.btnKanan.text = "Beli Lagi"
+            }
+            "siap_diambil" -> {
+                holder.tvStatus.text = "Siap Diambil"
+                holder.tvStatus.setTextColor(Color.parseColor("#FF9800")) // Teks Orange
+                holder.tvStatus.setBackgroundColor(Color.parseColor("#FFF3E0")) // Background Orange Muda
 
-            holder.btnKiri.visibility = View.GONE // Sembunyikan tombol beri nilai jika belum selesai
-            holder.btnKanan.text = "Cek PIN" // Mengarahkan user untuk ambil makanan
+                holder.btnKiri.visibility = View.GONE
+                holder.btnKanan.text = "Cek PIN"
+            }
+            "batal" -> {
+                holder.tvStatus.text = "Dibatalkan"
+                holder.tvStatus.setTextColor(Color.parseColor("#F44336")) // Teks Merah
+                holder.tvStatus.setBackgroundColor(Color.parseColor("#FFEBEE")) // Background Merah Muda
+
+                holder.btnKiri.visibility = View.GONE
+                holder.btnKanan.text = "Beli Lagi"
+            }
+            else -> {
+                // Digunakan untuk status "menunggu" atau "disiapkan"
+                holder.tvStatus.text = "Diproses"
+                holder.tvStatus.setTextColor(Color.parseColor("#2196F3")) // Teks Biru
+                holder.tvStatus.setBackgroundColor(Color.parseColor("#E3F2FD")) // Background Biru Muda
+
+                holder.btnKiri.visibility = View.GONE
+                holder.btnKanan.text = "Cek PIN"
+            }
         }
 
         // Tampilkan foto makanan pendukung di riwayat

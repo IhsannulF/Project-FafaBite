@@ -20,6 +20,7 @@ class Toko extends Model
         'latitude',
         'longitude',
         'jam_tutup',
-        'saldo'
+        'saldo',
+        'foto_profil'
     ];
 }

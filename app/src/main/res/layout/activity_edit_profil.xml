@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F6FA"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/fafa_blue_primary"
+        android:padding="20dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/btnBackEdit"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_revert"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Ubah Informasi Akun"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:cardCornerRadius="50dp"
+                app:cardElevation="4dp"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/ivEditFoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#E3F2FD"
+                    android:padding="20dp"
+                    android:src="@android:drawable/ic_menu_camera"
+                    app:tint="@color/fafa_blue_primary" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/btnUbahFoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ubah Foto Profil"
+                android:textColor="@color/fafa_blue_primary"
+                android:textStyle="bold"
+                android:layout_marginBottom="32dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nama Lengkap / Toko"
+                    android:textColor="@color/text_grey"
+                    android:layout_marginBottom="8dp"/>
+                <EditText
+                    android:id="@+id/etEditNama"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg_input_pill"
+                    android:paddingHorizontal="16dp"
+                    android:hint="Masukkan Nama"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Alamat Email"
+                    android:textColor="@color/text_grey"
+                    android:layout_marginBottom="8dp"/>
+                <EditText
+                    android:id="@+id/etEditEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/bg_input_pill"
+                    android:paddingHorizontal="16dp"
+                    android:inputType="textEmailAddress"
+                    android:hint="Masukkan Email"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutEditAlamat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="32dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Alamat Toko (Sesuai Titik Lokasi)"
+                    android:textColor="@color/text_grey"
+                    android:layout_marginBottom="8dp"/>
+                <EditText
+                    android:id="@+id/etEditAlamat"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="@drawable/bg_input_pill"
+                    android:padding="16dp"
+                    android:gravity="top|start"
+                    android:inputType="textMultiLine"
+                    android:hint="Masukkan Alamat Lengkap Toko"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnSimpanProfil"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="Simpan Perubahan"
+                android:backgroundTint="@color/fafa_blue_primary"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:cornerRadius="12dp"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

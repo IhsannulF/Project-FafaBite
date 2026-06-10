@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.fafabite.CheckoutActivity
@@ -29,7 +30,6 @@ class MakananSekitarAdapter(private val listMakanan: List<MakananBeranda>) : Rec
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        // INI YANG BEDA: Memanggil layout vertikal
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_makanan_sekitar, parent, false)
         return ViewHolder(view)
     }
@@ -57,7 +57,6 @@ class MakananSekitarAdapter(private val listMakanan: List<MakananBeranda>) : Rec
         }
 
         if (!makanan.fotoMakanan.isNullOrEmpty()) {
-            // MENGGUNAKAN URL GLOBAL DARI ApiConfig
             val urlFoto = ApiConfig.IMAGE_URL + makanan.fotoMakanan
 
             Glide.with(holder.itemView.context)
@@ -72,10 +71,16 @@ class MakananSekitarAdapter(private val listMakanan: List<MakananBeranda>) : Rec
 
         // Logika saat kartu makanan diklik
         holder.itemView.setOnClickListener {
+            // VALIDASI: Jika stok habis, jangan buka halaman Checkout
+            if (makanan.stok <= 0 || !makanan.status.equals("tersedia", ignoreCase = true)) {
+                Toast.makeText(holder.itemView.context, "Maaf, menu makanan ini sudah habis!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val intent = Intent(holder.itemView.context, CheckoutActivity::class.java)
             intent.putExtra("ID_MAKANAN", makanan.id)
             intent.putExtra("NAMA_MAKANAN", makanan.namaMakanan)
-            intent.putExtra("HARGA_MAKANAN", makanan.hargaDiskon) // Kita pakai harga diskon
+            intent.putExtra("HARGA_MAKANAN", makanan.hargaDiskon)
             intent.putExtra("FOTO_MAKANAN", makanan.fotoMakanan)
             intent.putExtra("NAMA_TOKO", makanan.namaToko)
             intent.putExtra("STOK_MAKANAN", makanan.stok)

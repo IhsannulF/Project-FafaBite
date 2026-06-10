@@ -5,17 +5,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Pesanan;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB; // Tambahkan ini untuk fitur JOIN
+use Illuminate\Support\Facades\DB;
 
 class PesananController extends Controller
 {
     // 1. Mengambil Daftar Pesanan Berdasarkan ID Toko (Untuk Penjual)
     public function getPesananToko($id_toko)
     {
-        // Fungsi with(['user', 'produk']) ini yang akan menarik data nama pembeli dan nama makanan secara otomatis!
         $pesanans = Pesanan::with(['user', 'produk'])
             ->where('id_toko', $id_toko)
-            ->orderBy('created_at', 'desc') // Urutkan dari yang terbaru
+            ->orderBy('created_at', 'desc')
             ->get();
 
         if ($pesanans->isEmpty()) {
@@ -37,7 +36,7 @@ class PesananController extends Controller
     public function updateStatus(Request $request, $id)
     {
         try {
-            DB::beginTransaction(); // Kunci database ben aman
+            DB::beginTransaction();
 
             $pesanan = Pesanan::find($id);
 
@@ -45,7 +44,7 @@ class PesananController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Pesanan tidak ditemukan'], 404);
             }
 
-            $status_baru = $request->status_pesanan; // Bakal nerima 'disiapkan' utawa 'batal' dari Android
+            $status_baru = $request->status_pesanan; 
             $status_lama = $pesanan->status_pesanan;
 
             // LOGIKA REFUND: Kalau pesanan ditolak/dibatalkan, kembalikan uang dan stok
@@ -66,11 +65,20 @@ class PesananController extends Controller
                 }
             }
 
-            // Update status e dadi sing anyar
+            // LOGIKA PENERIMAAN DANA: Kalau pesanan selesai, uang diteruskan ke Penjual
+            if ($status_baru == 'selesai' && $status_lama != 'selesai') {
+                $penjual = \App\Models\User::find($pesanan->id_toko);
+                if ($penjual) {
+                    $penjual->saldo += $pesanan->total_harga;
+                    $penjual->save();
+                }
+            }
+
+            // Update statusnya menjadi yang baru
             $pesanan->status_pesanan = $status_baru;
             $pesanan->save();
 
-            DB::commit(); // Simpan permanen
+            DB::commit();
 
             return response()->json([
                 'status' => 'success',
@@ -91,7 +99,6 @@ class PesananController extends Controller
     public function getRiwayatPesanan($id_user)
     {
         try {
-            // Kita gabungkan (JOIN) tabel pesanans dengan tokos dan produks
             $riwayat = DB::table('pesanans')
                 ->join('tokos', 'pesanans.id_toko', '=', 'tokos.id_toko')
                 ->join('produks', 'pesanans.id_produk', '=', 'produks.id')
@@ -99,10 +106,10 @@ class PesananController extends Controller
                     'pesanans.*', 
                     'tokos.nama_toko', 
                     'produks.nama_makanan',
-                    'produks.foto_makanan' // Kita bawa fotonya juga untuk ditampilkan di card Android
+                    'produks.foto_makanan'
                 )
                 ->where('pesanans.id_user', $id_user)
-                ->orderBy('pesanans.created_at', 'desc') // Urutkan dari yang terbaru
+                ->orderBy('pesanans.created_at', 'desc')
                 ->get();
 
             return response()->json([
@@ -123,45 +130,38 @@ class PesananController extends Controller
     public function checkout(Request $request)
     {
         try {
-            // Memulai transaksi database yang aman
             DB::beginTransaction();
 
             $user = User::find($request->id_user);
             $produk = \App\Models\Produk::find($request->id_produk);
             $jumlah_pesan = $request->jumlah_pesan;
 
-            // 1. Validasi Data
             if (!$user || !$produk) {
                 return response()->json(['status' => 'error', 'message' => 'Data User atau Produk tidak ditemukan'], 404);
             }
 
-            // 2. Pengecekan Stok Makanan
             if ($produk->stok < $jumlah_pesan) {
                 return response()->json(['status' => 'error', 'message' => 'Mohon maaf, stok makanan tidak mencukupi'], 400);
             }
 
-            // 3. Kalkulasi Total Harga
             $total_harga = $produk->harga_diskon * $jumlah_pesan;
 
-            // 4. Pengecekan Saldo FafaPay Pembeli
             if ($user->saldo < $total_harga) {
                 return response()->json(['status' => 'error', 'message' => 'Saldo FafaPay Anda tidak mencukupi'], 400);
             }
 
-            // 5. EKSEKUSI PEMBAYARAN: Potong Saldo & Kurangi Stok Sementara
+            // Potong saldo Pembeli & Kurangi Stok Sementara
             $user->saldo -= $total_harga;
             $user->save();
 
             $produk->stok -= $jumlah_pesan;
             $produk->save();
 
-            // 6. Hasilkan PIN Pengambilan Acak (Contoh: FAFA-8892)
             $pin_acak = 'FAFA-' . rand(1000, 9999);
 
-            // 7. Simpan Riwayat ke Tabel Pesanans
             $pesanan = new Pesanan();
             $pesanan->id_toko = $produk->id_toko;
-            $pesanan->id_user = $user->id;
+            $pesanan->id_user = $user->id; // Akan menunjuk ke ID 4 jika dari Android dikirim 4
             $pesanan->id_produk = $produk->id;
             $pesanan->nomor_order = $pin_acak;
             $pesanan->jumlah_pesan = $jumlah_pesan;
@@ -169,7 +169,6 @@ class PesananController extends Controller
             $pesanan->status_pesanan = 'disiapkan';
             $pesanan->save();
 
-            // Kunci semua perubahan secara permanen di database
             DB::commit();
 
             return response()->json([
@@ -179,7 +178,6 @@ class PesananController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            // Jika ada error/gagal, kembalikan uang dan stok seperti semula!
             DB::rollBack();
             return response()->json([
                 'status' => 'error',
